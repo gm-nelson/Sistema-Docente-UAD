@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Control de Asistencia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+    :root {
+        --radius: 12px;
+        --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        --primary: #D00000; /* Rojo UAD */
+        --uad-red: #D00000; /* Rojo UAD principal */
+        --uad-dark-red: #A00000; /* Rojo UAD oscuro */
+        --border-radius: 6px;
+        --transition: all .2s ease;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f8fafc;
+        color: #334155;
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .header {
+        background: var(--uad-red);
+        color: white;
+        padding: 20px;
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .logos-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .logo-uad {
+        height: 80px;
+        width: auto;
+        background: var(--uad-red);
+        padding: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .logo-uad img {
+        height: 100%;
+        width: auto;
+        filter: brightness(0) invert(1); /* Hace el logo blanco */
+    }
+    
+    .header-content {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .header h1 {
+        margin-bottom: 5px;
+        font-size: 28px;
+    }
+    
+    .header p {
+        opacity: 0.9;
+    }
+    
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .btn-primary {
+        background: var(--uad-red);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: var(--uad-dark-red);
+    }
+    
+    .btn-success {
+        background: #10b981;
+        color: white;
+    }
+    
+    .btn-warning {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-dark {
+        background: #475569;
+        color: white;
+    }
+    
+    .controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .controls input, .controls select {
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .student-display {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        text-align: center;
+        margin: 20px 0;
+        border-left: 4px solid var(--uad-red);
+    }
+    
+    .student-name {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #334155;
+        min-height: 40px;
+    }
+    
+    .student-counter {
+        font-size: 16px;
+        color: #64748b;
+    }
+    
+    .control-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 20px 0;
+    }
+    
+    .control-buttons button {
+        min-width: 140px;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    th, td {
+        border: 1px solid #e2e8f0;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    th {
+        background: #f8fafc;
+        font-weight: 600;
+    }
+    
+    td.nombre-alumno {
+        text-align: left;
+        font-weight: 500;
+        min-width: 200px;
+        position: sticky;
+        left: 0;
+        background: white;
+    }
+    
+    .celda-asistencia {
+        min-width: 40px;
+        font-family: monospace;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    
+    .celda-asistencia:hover {
+        background: #f1f5f9;
+    }
+    
+    .asistencia {
+        color: #10b981;
+        font-weight: 600;
+        background: rgba(16,185,129,0.1);
+    }
+    
+    .falta {
+        color: #ef4444;
+        font-weight: 600;
+        background: rgba(239,68,68,0.1);
+    }
+    
+    .empty-cell {
+        background: #f8fafc;
+        color: #94a3b8;
+        cursor: pointer;
+    }
+    
+    .empty-cell:hover {
+        background: #e2e8f0;
+    }
+    
+    .cycles-grid, .groups-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .cycle-item, .group-item {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius);
+        padding: 15px;
+        transition: var(--transition);
+    }
+    
+    .cycle-item:hover, .group-item:hover {
+        border-color: var(--uad-red);
+        transform: translateY(-2px);
+    }
+    
+    .cycle-name, .group-name {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #334155;
+    }
+    
+    .cycle-meta, .group-meta {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+    
+    .item-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .item-actions button {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .item-actions button:hover {
+        background: #f8fafc;
+        color: #334155;
+    }
+    
+    .hidden {
+        display: none !important;
+    }
+    
+    .toast {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 12px 20px;
+        border-radius: var(--border-radius);
+        z-index: 1000;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--uad-red);
+        margin: 20px 0 15px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .export-options {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+    
+    .export-options button {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    /* Nuevos estilos para las modificaciones */
+    .search-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .search-box {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding-right: 35px;
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+    }
+    
+    .active-cycle-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .active-cycle-label {
+        font-weight: 500;
+        color: #334155;
+    }
+    
+    .cycle-active {
+        border-left: 4px solid var(--uad-red);
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 20px;
+        color: #64748b;
+        font-style: italic;
+    }
+    
+    .filters-container {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .filters-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla Principal -->
+        <div id="homeScreen">
+            <div class="header">
+                <div class="logos-container">
+                    <div class="logo-uad">
+                        <img src="https://portal.uad.mx/assets/dist/img/logo.png" alt="Logo UAD" id="uadLogo">
+                    </div>
+                    <div class="header-content">
+                        <h1>Control de Asistencia</h1>
+                        <p>Sistema de gestión de ciclos, grupos y asistencias</p>
+                    </div>
+                    <div style="width: 120px;"></div> <!-- Espacio para balancear el logo -->
+                </div>
+            </div>
+            
+            <!-- Gestión de Ciclos con Filtros Integrados -->
+            <div class="card">
+                <div class="section-title">
+                    <i class="fas fa-calendar-week"></i>
+                    Ciclos Académicos
+                </div>
+                
+                <!-- Filtros integrados -->
+                <div class="filters-container">
+                    <div class="filters-title">
+                        <i class="fas fa-filter"></i>
+                        Filtros
+                    </div>
+                    
+                    <div class="active-cycle-selector">
+                        <span class="active-cycle-label">Ciclo activo:</span>
+                        <select id="selectActiveCycle">
+                            <option value="">Mostrar todos los ciclos</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Buscar ciclos o grupos...">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <input type="text" id="inputNuevoCiclo" placeholder="Nombre del ciclo (ej: 2024-1)">
+                    <input type="date" id="inputFechaInicio">
+                    <input type="date" id="inputFechaFin">
+                    <button id="btnCrearCiclo" class="btn btn-primary">Crear Ciclo</button>
+                </div>
+                
+                <div class="cycles-grid" id="cyclesList">
+                    <!-- Ciclos se cargan aquí -->
+                </div>
+            </div>
+            
+            <!-- Gestión de Grupos -->
+            <div class="card">
+                <div class="section-title">
+                    <i class="fas fa-users"></i>
+                    Grupos
+                </div>
+                
+                <div class="controls">
+                    <input type="text" id="inputNuevoGrupo" placeholder="Nombre del grupo">
+                    <select id="selectCicloGrupo">
+                        <option value="">Seleccionar ciclo</option>
+                    </select>
+                    <button id="btnCrearGrupo" class="btn btn-primary">Crear Grupo</button>
+                </div>
+                
+                <div class="groups-grid" id="groupsList">
+                    <!-- Grupos se cargan aquí -->
+                </div>
+            </div>
+            
+            <!-- Importar/Exportar -->
+            <div class="card">
+                <div class="section-title">
+                    <i class="fas fa-database"></i>
+                    Respaldos
+                </div>
+                <div class="export-options">
+                    <button id="btnImportAll" class="btn btn-dark">
+                        <i class="fas fa-file-import"></i> Importar Todo
+                    </button>
+                    <button id="btnExportAll" class="btn btn-warning">
+                        <i class="fas fa-file-export"></i> Exportar Todo
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Asistencia -->
+        <div id="asistenciaScreen" class="hidden">
+            <div class="header">
+                <div class="logos-container">
+                    <div class="logo-uad">
+                        <img src="https://portal.uad.mx/assets/dist/img/logo.png" alt="Logo UAD" id="uadLogoAsistencia">
+                    </div>
+                    <div class="header-content">
+                        <h1 id="currentGroupTitle">Asistencia</h1>
+                        <button id="btnVolverInicio" class="btn btn-dark" style="margin-top: 10px;">
+                            <i class="fas fa-arrow-left"></i> Volver al Inicio
+                        </button>
+                    </div>
+                    <div style="width: 120px;"></div> <!-- Espacio para balancear el logo -->
+                </div>
+            </div>
+            
+            <!-- Selector de Parcial -->
+            <div class="card">
+                <div class="controls">
+                    <select id="selectParcialActual">
+                        <option value="Primer Parcial">Primer Parcial</option>
+                    </select>
+                    <input type="text" id="inputNuevoParcial" placeholder="Nuevo parcial">
+                    <button id="btnCrearParcial" class="btn btn-primary">Crear Parcial</button>
+                    <span id="partialInfo" style="padding: 10px; color: #64748b;">0 fechas</span>
+                </div>
+            </div>
+            
+            <!-- Control de Asistencia -->
+            <div class="card">
+                <div class="student-display">
+                    <div class="student-name" id="nombreActual">Selecciona "Iniciar Asistencia"</div>
+                    <div class="student-counter" id="contador">0/0</div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button id="btnAsistencia" class="btn btn-success">Asistencia (.)</button>
+                    <button id="btnFalta" class="btn btn-warning">Falta (/)</button>
+                    <button id="btnRepetir" class="btn btn-dark">Repetir (R)</button>
+                    <button id="btnIniciarAsistencia" class="btn btn-primary">Iniciar Asistencia</button>
+                </div>
+                
+                <div class="controls">
+                    <input type="number" id="inputMes" min="1" max="12" placeholder="Mes" value="">
+                    <input type="number" id="inputDia" min="1" max="31" placeholder="Día" value="">
+                    <input type="text" id="nuevoAlumno" placeholder="Agregar alumno">
+                    <button id="btnAgregarAlumno" class="btn btn-primary">Agregar</button>
+                </div>
+            </div>
+            
+            <!-- Tabla de Asistencia -->
+            <div class="card">
+                <div class="export-options">
+                    <button id="btnExportExcel" class="btn btn-success">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button id="btnExportParcial" class="btn btn-warning">
+                        <i class="fas fa-download"></i> Exportar Parcial
+                    </button>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table id="tablaAsistencia">
+                        <thead id="tablaHeader"></thead>
+                        <tbody id="tablaBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast hidden" id="toast">Guardado</div>
+
+    <script>
+    // Variables globales
+    let groupsStore = {};
+    let cyclesStore = {};
+    let currentGroup = null;
+    let nombres = [];
+    let fechasRegistradas = [];
+    let indice = 0;
+    let currentPartial = 'Primer Parcial';
+    let partials = {};
+    let activeCycleId = ''; // Nuevo: ID del ciclo activo
+    let searchTerm = ''; // Nuevo: término de búsqueda
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+        setupEventListeners();
+        setupDefaultDates();
+    });
+
+    function initializeApp() {
+        loadAllData();
+        renderActiveCycleSelector(); // Nuevo: renderizar selector de ciclo activo
+        renderCyclesList();
+        renderGroupsList();
+        showHomeScreen();
+    }
+
+    function setupDefaultDates() {
+        const hoy = new Date();
+        document.getElementById('inputMes').value = hoy.getMonth() + 1;
+        document.getElementById('inputDia').value = hoy.getDate();
+        
+        const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        document.getElementById('inputFechaInicio').valueAsDate = inicioMes;
+        document.getElementById('inputFechaFin').valueAsDate = finMes;
+    }
+
+    // Gestión de datos
+    function loadAllData() {
+        try {
+            const groupsData = localStorage.getItem('asistencia_groups');
+            const cyclesData = localStorage.getItem('asistencia_cycles');
+            const activeCycleData = localStorage.getItem('asistencia_activeCycle'); // Nuevo: cargar ciclo activo
+            
+            groupsStore = groupsData ? JSON.parse(groupsData) : {};
+            cyclesStore = cyclesData ? JSON.parse(cyclesData) : {};
+            activeCycleId = activeCycleData || ''; // Nuevo: establecer ciclo activo
+        } catch (error) {
+            groupsStore = {};
+            cyclesStore = {};
+            activeCycleId = '';
+        }
+    }
+
+    function saveAllData() {
+        localStorage.setItem('asistencia_groups', JSON.stringify(groupsStore));
+        localStorage.setItem('asistencia_cycles', JSON.stringify(cyclesStore));
+        localStorage.setItem('asistencia_activeCycle', activeCycleId); // Nuevo: guardar ciclo activo
+        showToast('Datos guardados');
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+    }
+
+    // Nuevo: Renderizar selector de ciclo activo
+    function renderActiveCycleSelector() {
+        const select = document.getElementById('selectActiveCycle');
+        select.innerHTML = '<option value="">Mostrar todos los ciclos</option>';
+        
+        Object.keys(cyclesStore).forEach(cycleId => {
+            const cycle = cyclesStore[cycleId];
+            const option = document.createElement('option');
+            option.value = cycleId;
+            option.textContent = cycle.nombre;
+            option.selected = cycleId === activeCycleId;
+            select.appendChild(option);
+        });
+    }
+
+    // Nuevo: Cambiar ciclo activo
+    function setActiveCycle() {
+        const select = document.getElementById('selectActiveCycle');
+        activeCycleId = select.value;
+        saveAllData();
+        renderCyclesList();
+        renderGroupsList();
+    }
+
+    // Gestión de ciclos
+    function editCycle(cycleId) {
+        const cycle = cyclesStore[cycleId];
+        const nuevoNombre = prompt('Nuevo nombre del ciclo:', cycle.nombre);
+        
+        if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== cycle.nombre) {
+            // Verificar si ya existe un ciclo con ese nombre
+            const nombreExistente = Object.values(cyclesStore).some(
+                c => c.nombre === nuevoNombre.trim() && c.id !== cycleId
+            );
+            
+            if (nombreExistente) {
+                alert('Ya existe un ciclo con ese nombre');
+                return;
+            }
+            
+            cycle.nombre = nuevoNombre.trim();
+            saveAllData();
+            renderActiveCycleSelector();
+            renderCyclesList();
+            showToast('Ciclo actualizado');
+        }
+    }
+    
+    function renderCyclesList() {
+        const cyclesList = document.getElementById('cyclesList');
+        const cicloSelect = document.getElementById('selectCicloGrupo');
+        
+        cyclesList.innerHTML = '';
+        cicloSelect.innerHTML = '<option value="">Seleccionar ciclo</option>';
+        
+        let hasVisibleCycles = false;
+        
+        Object.keys(cyclesStore).forEach(cycleId => {
+            const cycle = cyclesStore[cycleId];
+            
+            // Nuevo: Filtrar por ciclo activo si está establecido
+            if (activeCycleId && cycleId !== activeCycleId) {
+                return;
+            }
+            
+            // Nuevo: Filtrar por término de búsqueda
+            if (searchTerm && !cycle.nombre.toLowerCase().includes(searchTerm.toLowerCase())) {
+                return;
+            }
+            
+            hasVisibleCycles = true;
+            
+            // Item en la lista
+            const cycleItem = document.createElement('div');
+            cycleItem.className = `cycle-item ${cycleId === activeCycleId ? 'cycle-active' : ''}`;
+            cycleItem.innerHTML = `
+                <div class="cycle-name">${cycle.nombre}</div>
+                <div class="cycle-meta">
+                    ${new Date(cycle.fechaInicio).toLocaleDateString()} - ${new Date(cycle.fechaFin).toLocaleDateString()}
+                </div>
+                <div class="item-actions">
+                    <button onclick="setAsActiveCycle('${cycleId}')">Activar</button>
+                    <button onclick="editCycle('${cycleId}')">Editar</button>
+                    <button onclick="deleteCycle('${cycleId}')">Eliminar</button>
+                </div>
+            `;
+            cyclesList.appendChild(cycleItem);
+            
+            // Opción en el select
+            const option = document.createElement('option');
+            option.value = cycleId;
+            option.textContent = cycle.nombre;
+            cicloSelect.appendChild(option);
+        });
+        
+        // Nuevo: Mostrar mensaje si no hay resultados
+        if (!hasVisibleCycles) {
+            cyclesList.innerHTML = '<div class="no-results">No se encontraron ciclos</div>';
+        }
+    }
+
+    // Nuevo: Establecer ciclo como activo
+    function setAsActiveCycle(cycleId) {
+        activeCycleId = cycleId;
+        saveAllData();
+        renderActiveCycleSelector();
+        renderCyclesList();
+        renderGroupsList();
+    }
+
+    function createCycle() {
+        const name = document.getElementById('inputNuevoCiclo').value.trim();
+        const fechaInicio = document.getElementById('inputFechaInicio').value;
+        const fechaFin = document.getElementById('inputFechaFin').value;
+        
+        if (!name || !fechaInicio || !fechaFin) {
+            alert('Completa todos los campos del ciclo');
+            return;
+        }
+        
+        const cycleId = 'cycle_' + Date.now();
+        cyclesStore[cycleId] = {
+            id: cycleId,
+            nombre: name,
+            fechaInicio: fechaInicio,
+            fechaFin: fechaFin,
+            fechaCreacion: new Date().toISOString()
+        };
+        
+        saveAllData();
+        renderActiveCycleSelector(); // Actualizar selector de ciclo activo
+        renderCyclesList();
+        document.getElementById('inputNuevoCiclo').value = '';
+    }
+
+    function deleteCycle(cycleId) {
+        if (confirm('¿Eliminar este ciclo?')) {
+            delete cyclesStore[cycleId];
+            
+            // Si el ciclo eliminado era el activo, limpiar selección
+            if (cycleId === activeCycleId) {
+                activeCycleId = '';
+            }
+            
+            saveAllData();
+            renderActiveCycleSelector();
+            renderCyclesList();
+        }
+    }
+
+    // Gestión de grupos
+    function editGroup(oldGroupName) {
+        const nuevoNombre = prompt('Nuevo nombre del grupo:', oldGroupName);
+        
+        if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== oldGroupName) {
+            // Verificar si ya existe un grupo con ese nombre
+            if (groupsStore[nuevoNombre.trim()]) {
+                alert('Ya existe un grupo con ese nombre');
+                return;
+            }
+            
+            // Guardar los datos del grupo con el nuevo nombre
+            groupsStore[nuevoNombre.trim()] = groupsStore[oldGroupName];
+            // Eliminar el grupo con el nombre antiguo
+            delete groupsStore[oldGroupName];
+            
+            // Si el grupo editado es el actual, actualizar currentGroup
+            if (currentGroup === oldGroupName) {
+                currentGroup = nuevoNombre.trim();
+            }
+            
+            saveAllData();
+            renderGroupsList();
+            showToast('Grupo actualizado');
+        }
+    }
+    function renderGroupsList() {
+        const groupsList = document.getElementById('groupsList');
+        groupsList.innerHTML = '';
+        
+        let hasVisibleGroups = false;
+        
+        Object.keys(groupsStore).forEach(groupName => {
+            const group = groupsStore[groupName];
+            
+            // Nuevo: Filtrar por ciclo activo si está establecido
+            if (activeCycleId && group.ciclo !== activeCycleId) {
+                return;
+            }
+            
+            // Nuevo: Filtrar por término de búsqueda
+            if (searchTerm && !groupName.toLowerCase().includes(searchTerm.toLowerCase())) {
+                return;
+            }
+            
+            hasVisibleGroups = true;
+            
+            const cycleName = group.ciclo && cyclesStore[group.ciclo] ? cyclesStore[group.ciclo].nombre : 'Sin ciclo';
+            
+            const groupItem = document.createElement('div');
+            groupItem.className = 'group-item';
+            groupItem.innerHTML = `
+                <div class="group-name">${groupName}</div>
+                <div class="group-meta">
+                    ${cycleName} • ${group.nombres.length} alumnos
+                </div>
+                <div class="item-actions">
+                    <button onclick="openGroup('${groupName}')">Abrir</button>
+                    <button onclick="editGroup('${groupName}')">Editar</button>
+                    <button onclick="deleteGroup('${groupName}')">Eliminar</button>
+                </div>
+            `;
+            groupsList.appendChild(groupItem);
+        });
+        
+        // Nuevo: Mostrar mensaje si no hay resultados
+        if (!hasVisibleGroups) {
+            groupsList.innerHTML = '<div class="no-results">No se encontraron grupos</div>';
+        }
+    }
+
+    function createGroup() {
+        const name = document.getElementById('inputNuevoGrupo').value.trim();
+        const cicloId = document.getElementById('selectCicloGrupo').value;
+        
+        if (!name) {
+            alert('Ingresa nombre del grupo');
+            return;
+        }
+        
+        if (groupsStore[name]) {
+            alert('Ya existe un grupo con ese nombre');
+            return;
+        }
+        
+        groupsStore[name] = {
+            ciclo: cicloId || null,
+            nombres: [],
+            partials: {
+                'Primer Parcial': {
+                    nombre: 'Primer Parcial',
+                    fechas: [],
+                    historial: {}
+                }
+            },
+            currentPartial: 'Primer Parcial',
+            ultimaModificacion: new Date().toISOString()
+        };
+        
+        saveAllData();
+        renderGroupsList();
+        document.getElementById('inputNuevoGrupo').value = '';
+    }
+
+    function deleteGroup(groupName) {
+        if (confirm('¿Eliminar este grupo?')) {
+            delete groupsStore[groupName];
+            saveAllData();
+            renderGroupsList();
+        }
+    }
+
+    function openGroup(groupName) {
+        currentGroup = groupName;
+        const group = groupsStore[groupName];
+        
+        nombres = group.nombres.slice();
+        partials = JSON.parse(JSON.stringify(group.partials));
+        currentPartial = group.currentPartial || 'Primer Parcial';
+        
+        const currentPartialData = partials[currentPartial];
+        fechasRegistradas = currentPartialData.fechas.map(f => ({mes: f.mes, dia: f.dia}));
+        
+        document.getElementById('currentGroupTitle').textContent = `Asistencia - ${groupName}`;
+        renderPartialSelector();
+        actualizarTablaCompleta();
+        showAsistenciaScreen();
+    }
+
+    // Gestión de parciales
+    function renderPartialSelector() {
+        const select = document.getElementById('selectParcialActual');
+        select.innerHTML = '';
+        
+        Object.keys(partials).forEach(partialName => {
+            const option = document.createElement('option');
+            option.value = partialName;
+            option.textContent = partials[partialName].nombre;
+            option.selected = partialName === currentPartial;
+            select.appendChild(option);
+        });
+        
+        updatePartialInfo();
+    }
+
+    function updatePartialInfo() {
+        const currentPartialData = partials[currentPartial];
+        const fechaCount = currentPartialData.fechas.length;
+        document.getElementById('partialInfo').textContent = `${fechaCount} fecha${fechaCount !== 1 ? 's' : ''}`;
+    }
+
+    function createPartial() {
+        const name = document.getElementById('inputNuevoParcial').value.trim();
+        
+        if (!name) {
+            alert('Ingresa nombre del parcial');
+            return;
+        }
+        
+        if (partials[name]) {
+            alert('Ya existe un parcial con ese nombre');
+            return;
+        }
+        
+        partials[name] = {
+            nombre: name,
+            fechas: [],
+            historial: {}
+        };
+        
+        // Inicializar historial para alumnos existentes
+        nombres.forEach(nombre => {
+            partials[name].historial[nombre] = {};
+        });
+        
+        saveCurrentGroup();
+        renderPartialSelector();
+        document.getElementById('inputNuevoParcial').value = '';
+    }
+
+    function switchPartial() {
+        const select = document.getElementById('selectParcialActual');
+        const newPartial = select.value;
+        
+        if (newPartial !== currentPartial) {
+            // Guardar estado actual
+            saveCurrentPartialState();
+            
+            // Cambiar al nuevo parcial
+            currentPartial = newPartial;
+            const currentPartialData = partials[currentPartial];
+            fechasRegistradas = currentPartialData.fechas.map(f => ({mes: f.mes, dia: f.dia}));
+            
+            updatePartialInfo();
+            actualizarTablaCompleta();
+            saveCurrentGroup();
+        }
+    }
+
+    // Funciones de asistencia
+    function saveCurrentGroup() {
+        if (!currentGroup) return;
+        
+        saveCurrentPartialState();
+        
+        groupsStore[currentGroup] = {
+            ...groupsStore[currentGroup],
+            nombres: nombres.slice(),
+            partials: JSON.parse(JSON.stringify(partials)),
+            currentPartial: currentPartial,
+            ultimaModificacion: new Date().toISOString()
+        };
+        
+        saveAllData();
+    }
+
+    function saveCurrentPartialState() {
+        if (!currentGroup || !currentPartial) return;
+        
+        partials[currentPartial].fechas = fechasRegistradas.map(f => ({mes: f.mes, dia: f.dia}));
+    }
+
+    function actualizarTablaCompleta() {
+        const tablaHeader = document.getElementById('tablaHeader');
+        const tablaBody = document.getElementById('tablaBody');
+        const currentPartialData = partials[currentPartial];
+        
+        // Ordenar fechas
+        fechasRegistradas.sort((a, b) => a.mes - b.mes || a.dia - b.dia);
+        
+        // Encabezados
+        tablaHeader.innerHTML = `
+            <tr>
+                <th>Alumno</th>
+                ${fechasRegistradas.map(f => `<th>${f.mes}/${f.dia}</th>`).join('')}
+                <th class="empty-cell" onclick="agregarColumna()">+</th>
+            </tr>
+        `;
+        
+        // Cuerpo de la tabla
+        tablaBody.innerHTML = '';
+        nombres.forEach((nombre, idx) => {
+            const tr = document.createElement('tr');
+            
+            // Celda del nombre
+            const tdNombre = document.createElement('td');
+            tdNombre.className = 'nombre-alumno';
+            tdNombre.textContent = nombre;
+            tdNombre.onclick = () => editarNombre(idx);
+            tr.appendChild(tdNombre);
+            
+            // Celdas de asistencia
+            fechasRegistradas.forEach(fecha => {
+                const fechaKey = `${fecha.mes}-${fecha.dia}`;
+                const td = document.createElement('td');
+                td.className = 'celda-asistencia';
+                
+                const valor = currentPartialData.historial[nombre]?.[fechaKey] || '';
+                td.textContent = valor;
+                
+                if (valor === '.') {
+                    td.classList.add('asistencia');
+                } else if (valor === '/') {
+                    td.classList.add('falta');
+                }
+                
+                td.onclick = () => toggleAsistencia(nombre, fechaKey, td);
+                tr.appendChild(td);
+            });
+            
+            // Celda vacía final
+            const tdEmpty = document.createElement('td');
+            tdEmpty.className = 'empty-cell';
+            tdEmpty.onclick = agregarColumna;
+            tr.appendChild(tdEmpty);
+            
+            tablaBody.appendChild(tr);
+        });
+        
+        // Fila para agregar alumnos
+        const trAdd = document.createElement('tr');
+        const tdAdd = document.createElement('td');
+        tdAdd.colSpan = fechasRegistradas.length + 2;
+        tdAdd.className = 'empty-cell';
+        tdAdd.textContent = '+ Agregar alumno';
+        tdAdd.onclick = agregarAlumnoDesdeTabla;
+        tdAdd.style.textAlign = 'center';
+        trAdd.appendChild(tdAdd);
+        tablaBody.appendChild(trAdd);
+        
+        actualizarInterfaz();
+    }
+
+
+    function agregarColumna() {
+        const mes = parseInt(document.getElementById('inputMes').value) || new Date().getMonth() + 1;
+        const dia = parseInt(document.getElementById('inputDia').value) || new Date().getDate();
+        
+        if (!mes || !dia) {
+            alert('Ingresa mes y día');
+            return;
+        }
+        
+        const fecha = {mes, dia};
+        if (!fechasRegistradas.some(f => f.mes === mes && f.dia === dia)) {
+            fechasRegistradas.push(fecha);
+            partials[currentPartial].fechas.push(fecha);
+            actualizarTablaCompleta();
+            saveCurrentGroup();
+        }
+    }
+
+    function agregarAlumno() {
+        const nombre = document.getElementById('nuevoAlumno').value.trim();
+        
+        if (!nombre) {
+            alert('Ingresa nombre del alumno');
+            return;
+        }
+        
+        if (nombres.includes(nombre)) {
+            alert('Ya existe un alumno con ese nombre');
+            return;
+        }
+        
+        nombres.push(nombre);
+        nombres.sort((a, b) => a.localeCompare(b));
+        
+        // Agregar a todos los parciales
+        Object.keys(partials).forEach(partialName => {
+            if (!partials[partialName].historial[nombre]) {
+                partials[partialName].historial[nombre] = {};
+            }
+        });
+        
+        document.getElementById('nuevoAlumno').value = '';
+        actualizarTablaCompleta();
+        saveCurrentGroup();
+    }
+
+    function agregarAlumnoDesdeTabla() {
+        const nombre = prompt('Nombre del nuevo alumno:');
+        if (nombre && nombre.trim()) {
+            document.getElementById('nuevoAlumno').value = nombre.trim();
+            agregarAlumno();
+        }
+    }
+
+    function editarNombre(idx) {
+        const nuevoNombre = prompt('Nuevo nombre:', nombres[idx]);
+        if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== nombres[idx]) {
+            const viejoNombre = nombres[idx];
+            nombres[idx] = nuevoNombre.trim();
+            
+            // Actualizar en todos los parciales
+            Object.keys(partials).forEach(partialName => {
+                if (partials[partialName].historial[viejoNombre]) {
+                    partials[partialName].historial[nuevoNombre] = partials[partialName].historial[viejoNombre];
+                    delete partials[partialName].historial[viejoNombre];
+                }
+            });
+            
+            actualizarTablaCompleta();
+            saveCurrentGroup();
+        }
+    }
+
+function toggleAsistencia(nombre, fechaKey, td) {
+    const currentPartialData = partials[currentPartial];
+    
+    if (!currentPartialData.historial[nombre]) {
+        currentPartialData.historial[nombre] = {};
+    }
+    
+    let valor = currentPartialData.historial[nombre][fechaKey] || '';
+    
+    // Alternar entre asistencia, falta y vacío
+    if (valor === '.') {
+        valor = '/'; // Cambiar a falta
+    } else if (valor === '/') {
+        valor = ''; // Vaciar
+    } else {
+        valor = '.'; // Marcar asistencia
+    }
+    
+    currentPartialData.historial[nombre][fechaKey] = valor;
+    
+    // Actualizar apariencia de la celda
+    td.textContent = valor;
+    td.className = 'celda-asistencia';
+    if (valor === '.') {
+        td.classList.add('asistencia');
+    } else if (valor === '/') {
+        td.classList.add('falta');
+    }
+    
+    saveCurrentGroup();
+}
+
+    function iniciarAsistencia() {
+        const mes = parseInt(document.getElementById('inputMes').value);
+        const dia = parseInt(document.getElementById('inputDia').value);
+        
+        if (!mes || !dia) {
+            alert('Ingresa mes y día válidos');
+            return;
+        }
+        
+        if (nombres.length === 0) {
+            alert('No hay alumnos en la lista');
+            return;
+        }
+        
+        // Agregar fecha si no existe
+        agregarColumna();
+        
+        // Reiniciar índice
+        indice = 0;
+        actualizarInterfaz();
+    }
+
+    function actualizarInterfaz() {
+        if (nombres.length > 0 && indice < nombres.length) {
+            document.getElementById('nombreActual').textContent = nombres[indice];
+            document.getElementById('contador').textContent = `${indice + 1}/${nombres.length}`;
+        } else {
+            document.getElementById('nombreActual').textContent = 'Lista completada';
+            document.getElementById('contador').textContent = `${nombres.length}/${nombres.length}`;
+        }
+    }
+
+    function marcarAsistencia() {
+        if (indice >= nombres.length) return;
+        
+        const mes = parseInt(document.getElementById('inputMes').value);
+        const dia = parseInt(document.getElementById('inputDia').value);
+        const fechaKey = `${mes}-${dia}`;
+        const nombre = nombres[indice];
+        
+        if (!fechasRegistradas.some(f => f.mes === mes && f.dia === dia)) {
+            agregarColumna();
+        }
+        
+        const currentPartialData = partials[currentPartial];
+        if (!currentPartialData.historial[nombre]) {
+            currentPartialData.historial[nombre] = {};
+        }
+        
+        currentPartialData.historial[nombre][fechaKey] = '.';
+        indice++;
+        actualizarInterfaz();
+        actualizarTablaCompleta();
+        saveCurrentGroup();
+    }
+
+    function marcarFalta() {
+        if (indice >= nombres.length) return;
+        
+        const mes = parseInt(document.getElementById('inputMes').value);
+        const dia = parseInt(document.getElementById('inputDia').value);
+        const fechaKey = `${mes}-${dia}`;
+        const nombre = nombres[indice];
+        
+        if (!fechasRegistradas.some(f => f.mes === mes && f.dia === dia)) {
+            agregarColumna();
+        }
+        
+        const currentPartialData = partials[currentPartial];
+        if (!currentPartialData.historial[nombre]) {
+            currentPartialData.historial[nombre] = {};
+        }
+        
+        currentPartialData.historial[nombre][fechaKey] = '/';
+        indice++;
+        actualizarInterfaz();
+        actualizarTablaCompleta();
+        saveCurrentGroup();
+    }
+
+    // Navegación
+    function showHomeScreen() {
+        document.getElementById('homeScreen').classList.remove('hidden');
+        document.getElementById('asistenciaScreen').classList.add('hidden');
+    }
+
+    function showAsistenciaScreen() {
+        document.getElementById('homeScreen').classList.add('hidden');
+        document.getElementById('asistenciaScreen').classList.remove('hidden');
+    }
+
+    // Exportación
+    function exportExcel() {
+        if (nombres.length === 0) {
+            alert('No hay datos para exportar');
+            return;
+        }
+        
+        const data = [['Alumno', ...fechasRegistradas.map(f => `${f.mes}/${f.dia}`)]];
+        const currentPartialData = partials[currentPartial];
+        
+        nombres.forEach(nombre => {
+            const row = [nombre];
+            fechasRegistradas.forEach(f => {
+                const fechaKey = `${f.mes}-${f.dia}`;
+                row.push(currentPartialData.historial[nombre]?.[fechaKey] || '');
+            });
+            data.push(row);
+        });
+        
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, currentPartial);
+        XLSX.writeFile(wb, `asistencia_${currentGroup}_${currentPartial}.xlsx`);
+        showToast('Excel exportado');
+    }
+
+    function exportAllData() {
+        const data = {
+            groups: groupsStore,
+            cycles: cyclesStore,
+            exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        saveAs(blob, `asistencia_backup_${new Date().toISOString().split('T')[0]}.json`);
+        showToast('Datos exportados');
+    }
+
+    function importAllData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (confirm('¿Importar datos? Se reemplazarán los actuales.')) {
+                        groupsStore = data.groups || {};
+                        cyclesStore = data.cycles || {};
+                        saveAllData();
+                        initializeApp();
+                        showToast('Datos importados');
+                    }
+                } catch (error) {
+                    alert('Error al importar: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    // Nuevo: Función de búsqueda
+    function performSearch() {
+        searchTerm = document.getElementById('searchInput').value.trim();
+        renderCyclesList();
+        renderGroupsList();
+    }
+
+    // Event listeners
+    function setupEventListeners() {
+        // Ciclos
+        document.getElementById('btnCrearCiclo').addEventListener('click', createCycle);
+        
+        // Grupos
+        document.getElementById('btnCrearGrupo').addEventListener('click', createGroup);
+        
+        // Navegación
+        document.getElementById('btnVolverInicio').addEventListener('click', showHomeScreen);
+        
+        // Parciales
+        document.getElementById('btnCrearParcial').addEventListener('click', createPartial);
+        document.getElementById('selectParcialActual').addEventListener('change', switchPartial);
+        
+        // Asistencia
+        document.getElementById('btnIniciarAsistencia').addEventListener('click', iniciarAsistencia);
+        document.getElementById('btnAsistencia').addEventListener('click', marcarAsistencia);
+        document.getElementById('btnFalta').addEventListener('click', marcarFalta);
+        document.getElementById('btnAgregarAlumno').addEventListener('click', agregarAlumno);
+        
+        // Exportación
+        document.getElementById('btnExportExcel').addEventListener('click', exportExcel);
+        document.getElementById('btnExportAll').addEventListener('click', exportAllData);
+        document.getElementById('btnImportAll').addEventListener('click', importAllData);
+        document.getElementById('btnExportParcial').addEventListener('click', exportExcel);
+        
+        // Nuevo: Selector de ciclo activo
+        document.getElementById('selectActiveCycle').addEventListener('change', setActiveCycle);
+        
+        // Nuevo: Búsqueda
+        document.getElementById('searchInput').addEventListener('input', performSearch);
+        
+    }
+    </script>
+</body>
+</html>
