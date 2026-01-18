@@ -3,11 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Control de Asistencia</title>
+    <title>Control de Asistencia y Evaluaciones</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
     :root {
         --radius: 12px;
@@ -128,6 +130,16 @@
     
     .btn-dark {
         background: #475569;
+        color: white;
+    }
+    
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-info {
+        background: #3b82f6;
         color: white;
     }
     
@@ -405,6 +417,319 @@
         align-items: center;
         gap: 8px;
     }
+    
+    /* Estilos para el modal de edición de asistencia */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-header h3 {
+        color: var(--uad-red);
+        margin: 0;
+    }
+    
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #64748b;
+    }
+    
+    .close-modal:hover {
+        color: var(--uad-red);
+    }
+    
+    .modal-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .modal-option {
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        background: white;
+        cursor: pointer;
+        text-align: center;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .modal-option:hover {
+        border-color: var(--uad-red);
+        background: #fef2f2;
+    }
+    
+    .modal-option.selected {
+        border-color: var(--uad-red);
+        background: var(--uad-red);
+        color: white;
+    }
+    
+    .modal-custom-input {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .modal-custom-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+    }
+    
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    /* Estilos para evaluaciones */
+    .evaluations-container {
+        margin-top: 30px;
+    }
+    
+    .evaluation-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: var(--transition);
+    }
+    
+    .evaluation-card:hover {
+        border-color: var(--uad-red);
+        box-shadow: var(--shadow);
+    }
+    
+    .evaluation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .evaluation-title {
+        font-weight: 600;
+        font-size: 16px;
+        color: #334155;
+    }
+    
+    .evaluation-percentage {
+        background: var(--uad-red);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .evaluation-description {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+    
+    .evaluation-scores {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .score-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #f8fafc;
+        border-radius: var(--border-radius);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .score-name {
+        font-weight: 500;
+        color: #334155;
+        font-size: 14px;
+    }
+    
+    .score-input {
+        width: 70px;
+        padding: 6px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        text-align: center;
+        font-family: inherit;
+    }
+    
+    .score-input:focus {
+        outline: none;
+        border-color: var(--uad-red);
+    }
+    
+    .evaluation-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .totals-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: var(--radius);
+        margin-top: 20px;
+    }
+    
+    .totals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .total-item {
+        text-align: center;
+        padding: 15px;
+        background: rgba(255,255,255,0.1);
+        border-radius: var(--radius);
+        backdrop-filter: blur(10px);
+    }
+    
+    .total-label {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 8px;
+    }
+    
+    .total-value {
+        font-size: 28px;
+        font-weight: 600;
+    }
+    
+    .student-name-excess-faltas {
+        color: #ef4444 !important;
+        font-weight: 600;
+        background: rgba(239,68,68,0.1) !important;
+    }
+    
+    .tab-buttons {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 20px;
+        background: #f1f5f9;
+        padding: 5px;
+        border-radius: var(--radius);
+    }
+    
+    .tab-button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: transparent;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        color: #64748b;
+        transition: var(--transition);
+    }
+    
+    .tab-button:hover {
+        background: rgba(208,0,0,0.1);
+    }
+    
+    .tab-button.active {
+        background: var(--uad-red);
+        color: white;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .missing-scores {
+        color: #f59e0b;
+        font-weight: 500;
+    }
+    
+    .rubrica-container {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: var(--radius);
+        margin-top: 10px;
+        border-left: 3px solid var(--uad-red);
+    }
+    
+    .rubrica-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .rubrica-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .rubrica-item:last-child {
+        border-bottom: none;
+    }
+    
+    .rubrica-label {
+        color: #64748b;
+        font-size: 14px;
+    }
+    
+    .rubrica-value {
+        font-weight: 600;
+        color: var(--uad-red);
+    }
     </style>
 </head>
 <body>
@@ -417,8 +742,8 @@
                         <img src="https://portal.uad.mx/assets/dist/img/logo.png" alt="Logo UAD" id="uadLogo">
                     </div>
                     <div class="header-content">
-                        <h1>Control de Asistencia</h1>
-                        <p>Sistema de gestión de ciclos, grupos y asistencias</p>
+                        <h1>Control de Asistencia y Evaluaciones</h1>
+                        <p>Sistema de gestión de ciclos, grupos, asistencias y evaluaciones</p>
                     </div>
                     <div style="width: 120px;"></div> <!-- Espacio para balancear el logo -->
                 </div>
@@ -502,7 +827,7 @@
             </div>
         </div>
         
-        <!-- Pantalla de Asistencia -->
+        <!-- Pantalla de Asistencia y Evaluaciones -->
         <div id="asistenciaScreen" class="hidden">
             <div class="header">
                 <div class="logos-container">
@@ -519,57 +844,163 @@
                 </div>
             </div>
             
-            <!-- Selector de Parcial -->
+            <!-- Pestañas -->
             <div class="card">
-                <div class="controls">
-                    <select id="selectParcialActual">
-                        <option value="Primer Parcial">Primer Parcial</option>
-                    </select>
-                    <input type="text" id="inputNuevoParcial" placeholder="Nuevo parcial">
-                    <button id="btnCrearParcial" class="btn btn-primary">Crear Parcial</button>
-                    <span id="partialInfo" style="padding: 10px; color: #64748b;">0 fechas</span>
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="asistencia">Asistencia</button>
+                    <button class="tab-button" data-tab="evaluaciones">Evaluaciones</button>
+                    <button class="tab-button" data-tab="reportes">Reportes</button>
+                </div>
+                
+                <!-- Pestaña Asistencia -->
+                <div id="tabAsistencia" class="tab-content active">
+                    <!-- Selector de Parcial -->
+                    <div class="card">
+                        <div class="controls">
+                            <select id="selectParcialActual">
+                                <option value="Primer Parcial">Primer Parcial</option>
+                            </select>
+                            <input type="text" id="inputNuevoParcial" placeholder="Nuevo parcial">
+                            <button id="btnCrearParcial" class="btn btn-primary">Crear Parcial</button>
+                            <span id="partialInfo" style="padding: 10px; color: #64748b;">0 fechas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Control de Asistencia -->
+                    <div class="card">
+                        <div class="student-display">
+                            <div class="student-name" id="nombreActual">Selecciona "Iniciar Asistencia"</div>
+                            <div class="student-counter" id="contador">0/0</div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button id="btnAsistencia" class="btn btn-success">Asistencia (.)</button>
+                            <button id="btnFalta" class="btn btn-warning">Falta (/)</button>
+                            <button id="btnRepetir" class="btn btn-dark">Repetir (R)</button>
+                            <button id="btnIniciarAsistencia" class="btn btn-primary">Iniciar Asistencia</button>
+                        </div>
+                        
+                        <div class="controls">
+                            <input type="number" id="inputMes" min="1" max="12" placeholder="Mes" value="">
+                            <input type="number" id="inputDia" min="1" max="31" placeholder="Día" value="">
+                            <input type="text" id="nuevoAlumno" placeholder="Agregar alumno">
+                            <button id="btnAgregarAlumno" class="btn btn-primary">Agregar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla de Asistencia -->
+                    <div class="card">
+                        <div class="export-options">
+                            <button id="btnExportExcel" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Exportar Excel Asistencia
+                            </button>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table id="tablaAsistencia">
+                                <thead id="tablaHeader"></thead>
+                                <tbody id="tablaBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pestaña Evaluaciones -->
+                <div id="tabEvaluaciones" class="tab-content">
+                    <div class="card">
+                        <div class="section-title">
+                            <i class="fas fa-clipboard-check"></i>
+                            Evaluaciones del Parcial
+                        </div>
+                        
+                        <!-- Lista de evaluaciones existentes -->
+                        <div id="evaluationsList" class="evaluations-container">
+                            <!-- Evaluaciones se cargan aquí -->
+                        </div>
+                        
+                        <!-- Formulario para nueva evaluación -->
+                        <div class="card" style="margin-top: 20px;">
+                            <div class="section-title">
+                                <i class="fas fa-plus-circle"></i>
+                                Nueva Evaluación
+                            </div>
+                            <div class="controls">
+                                <input type="text" id="inputEvaluacionNombre" placeholder="Nombre de la evaluación">
+                                <input type="number" id="inputEvaluacionPorcentaje" min="1" max="100" placeholder="Porcentaje (%)">
+                                <button id="btnCrearEvaluacion" class="btn btn-primary">Crear Evaluación</button>
+                            </div>
+                            <div class="controls">
+                                <textarea id="inputEvaluacionDescripcion" placeholder="Descripción de la evaluación" style="flex: 3; min-height: 80px; resize: vertical;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pestaña Reportes -->
+                <div id="tabReportes" class="tab-content">
+                    <div class="card">
+                        <div class="section-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Reporte de Calificaciones
+                        </div>
+                        
+                        <!-- Resumen de calificaciones -->
+                        <div id="reporteResumen" class="totals-card">
+                            <div class="section-title" style="color: white;">
+                                <i class="fas fa-chart-pie"></i>
+                                Resumen del Parcial
+                            </div>
+                            <div class="totals-grid" id="totalsGrid">
+                                <!-- Totales se cargan aquí -->
+                            </div>
+                        </div>
+                        
+                        <!-- Tabla de calificaciones -->
+                        <div class="card" style="margin-top: 20px;">
+                            <div class="export-options">
+                                <button id="btnExportReporteExcel" class="btn btn-success">
+                                    <i class="fas fa-file-excel"></i> Exportar Excel Calificaciones
+                                </button>
+                                <button id="btnExportReportePDF" class="btn btn-danger">
+                                    <i class="fas fa-file-pdf"></i> Exportar PDF Calificaciones
+                                </button>
+                            </div>
+                            
+                            <div style="overflow-x: auto;">
+                                <table id="tablaCalificaciones">
+                                    <thead id="calificacionesHeader"></thead>
+                                    <tbody id="calificacionesBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Control de Asistencia -->
-            <div class="card">
-                <div class="student-display">
-                    <div class="student-name" id="nombreActual">Selecciona "Iniciar Asistencia"</div>
-                    <div class="student-counter" id="contador">0/0</div>
-                </div>
-                
-                <div class="control-buttons">
-                    <button id="btnAsistencia" class="btn btn-success">Asistencia (.)</button>
-                    <button id="btnFalta" class="btn btn-warning">Falta (/)</button>
-                    <button id="btnRepetir" class="btn btn-dark">Repetir (R)</button>
-                    <button id="btnIniciarAsistencia" class="btn btn-primary">Iniciar Asistencia</button>
-                </div>
-                
-                <div class="controls">
-                    <input type="number" id="inputMes" min="1" max="12" placeholder="Mes" value="">
-                    <input type="number" id="inputDia" min="1" max="31" placeholder="Día" value="">
-                    <input type="text" id="nuevoAlumno" placeholder="Agregar alumno">
-                    <button id="btnAgregarAlumno" class="btn btn-primary">Agregar</button>
-                </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar asistencia -->
+    <div id="modalEditarAsistencia" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Asistencia</h3>
+                <button class="close-modal">&times;</button>
             </div>
-            
-            <!-- Tabla de Asistencia -->
-            <div class="card">
-                <div class="export-options">
-                    <button id="btnExportExcel" class="btn btn-success">
-                        <i class="fas fa-file-excel"></i> Exportar Excel
-                    </button>
-                    <button id="btnExportParcial" class="btn btn-warning">
-                        <i class="fas fa-download"></i> Exportar Parcial
-                    </button>
-                </div>
-                
-                <div style="overflow-x: auto;">
-                    <table id="tablaAsistencia">
-                        <thead id="tablaHeader"></thead>
-                        <tbody id="tablaBody"></tbody>
-                    </table>
-                </div>
+            <div class="modal-options">
+                <div class="modal-option" data-value=".">Asistencia (.)</div>
+                <div class="modal-option" data-value="/">Falta (/)</div>
+                <div class="modal-option" data-value="R">Retardo (R)</div>
+                <div class="modal-option" data-value="J">Justificada (J)</div>
+                <div class="modal-option" data-value="V">Vacaciones (V)</div>
+                <div class="modal-option" data-value="X">Permiso (X)</div>
+            </div>
+            <div class="modal-custom-input">
+                <input type="text" id="customAttendanceValue" placeholder="O escribe otro valor..." maxlength="3">
+                <button id="btnCustomAttendance" class="btn btn-primary">Usar</button>
+            </div>
+            <div class="modal-actions">
+                <button id="btnClearAttendance" class="btn btn-warning">Limpiar</button>
+                <button id="btnSaveAttendance" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
@@ -586,19 +1017,29 @@
     let indice = 0;
     let currentPartial = 'Primer Parcial';
     let partials = {};
-    let activeCycleId = ''; // Nuevo: ID del ciclo activo
-    let searchTerm = ''; // Nuevo: término de búsqueda
+    let activeCycleId = '';
+    let searchTerm = '';
+    
+    // Variables para el modal de edición
+    let currentEditCell = null;
+    let currentEditNombre = null;
+    let currentEditFechaKey = null;
+    let selectedAttendanceValue = '';
+    
+    // Variables para evaluaciones
+    let evaluations = {};
 
     // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
         setupEventListeners();
         setupDefaultDates();
+        setupTabNavigation();
     });
 
     function initializeApp() {
         loadAllData();
-        renderActiveCycleSelector(); // Nuevo: renderizar selector de ciclo activo
+        renderActiveCycleSelector();
         renderCyclesList();
         renderGroupsList();
         showHomeScreen();
@@ -620,22 +1061,26 @@
         try {
             const groupsData = localStorage.getItem('asistencia_groups');
             const cyclesData = localStorage.getItem('asistencia_cycles');
-            const activeCycleData = localStorage.getItem('asistencia_activeCycle'); // Nuevo: cargar ciclo activo
+            const activeCycleData = localStorage.getItem('asistencia_activeCycle');
+            const evaluationsData = localStorage.getItem('asistencia_evaluations');
             
             groupsStore = groupsData ? JSON.parse(groupsData) : {};
             cyclesStore = cyclesData ? JSON.parse(cyclesData) : {};
-            activeCycleId = activeCycleData || ''; // Nuevo: establecer ciclo activo
+            activeCycleId = activeCycleData || '';
+            evaluations = evaluationsData ? JSON.parse(evaluationsData) : {};
         } catch (error) {
             groupsStore = {};
             cyclesStore = {};
             activeCycleId = '';
+            evaluations = {};
         }
     }
 
     function saveAllData() {
         localStorage.setItem('asistencia_groups', JSON.stringify(groupsStore));
         localStorage.setItem('asistencia_cycles', JSON.stringify(cyclesStore));
-        localStorage.setItem('asistencia_activeCycle', activeCycleId); // Nuevo: guardar ciclo activo
+        localStorage.setItem('asistencia_activeCycle', activeCycleId);
+        localStorage.setItem('asistencia_evaluations', JSON.stringify(evaluations));
         showToast('Datos guardados');
     }
 
@@ -646,7 +1091,6 @@
         setTimeout(() => toast.classList.add('hidden'), 2000);
     }
 
-    // Nuevo: Renderizar selector de ciclo activo
     function renderActiveCycleSelector() {
         const select = document.getElementById('selectActiveCycle');
         select.innerHTML = '<option value="">Mostrar todos los ciclos</option>';
@@ -661,7 +1105,6 @@
         });
     }
 
-    // Nuevo: Cambiar ciclo activo
     function setActiveCycle() {
         const select = document.getElementById('selectActiveCycle');
         activeCycleId = select.value;
@@ -676,7 +1119,6 @@
         const nuevoNombre = prompt('Nuevo nombre del ciclo:', cycle.nombre);
         
         if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== cycle.nombre) {
-            // Verificar si ya existe un ciclo con ese nombre
             const nombreExistente = Object.values(cyclesStore).some(
                 c => c.nombre === nuevoNombre.trim() && c.id !== cycleId
             );
@@ -706,19 +1148,16 @@
         Object.keys(cyclesStore).forEach(cycleId => {
             const cycle = cyclesStore[cycleId];
             
-            // Nuevo: Filtrar por ciclo activo si está establecido
             if (activeCycleId && cycleId !== activeCycleId) {
                 return;
             }
             
-            // Nuevo: Filtrar por término de búsqueda
             if (searchTerm && !cycle.nombre.toLowerCase().includes(searchTerm.toLowerCase())) {
                 return;
             }
             
             hasVisibleCycles = true;
             
-            // Item en la lista
             const cycleItem = document.createElement('div');
             cycleItem.className = `cycle-item ${cycleId === activeCycleId ? 'cycle-active' : ''}`;
             cycleItem.innerHTML = `
@@ -734,20 +1173,17 @@
             `;
             cyclesList.appendChild(cycleItem);
             
-            // Opción en el select
             const option = document.createElement('option');
             option.value = cycleId;
             option.textContent = cycle.nombre;
             cicloSelect.appendChild(option);
         });
         
-        // Nuevo: Mostrar mensaje si no hay resultados
         if (!hasVisibleCycles) {
             cyclesList.innerHTML = '<div class="no-results">No se encontraron ciclos</div>';
         }
     }
 
-    // Nuevo: Establecer ciclo como activo
     function setAsActiveCycle(cycleId) {
         activeCycleId = cycleId;
         saveAllData();
@@ -776,7 +1212,7 @@
         };
         
         saveAllData();
-        renderActiveCycleSelector(); // Actualizar selector de ciclo activo
+        renderActiveCycleSelector();
         renderCyclesList();
         document.getElementById('inputNuevoCiclo').value = '';
     }
@@ -785,7 +1221,6 @@
         if (confirm('¿Eliminar este ciclo?')) {
             delete cyclesStore[cycleId];
             
-            // Si el ciclo eliminado era el activo, limpiar selección
             if (cycleId === activeCycleId) {
                 activeCycleId = '';
             }
@@ -801,18 +1236,14 @@
         const nuevoNombre = prompt('Nuevo nombre del grupo:', oldGroupName);
         
         if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== oldGroupName) {
-            // Verificar si ya existe un grupo con ese nombre
             if (groupsStore[nuevoNombre.trim()]) {
                 alert('Ya existe un grupo con ese nombre');
                 return;
             }
             
-            // Guardar los datos del grupo con el nuevo nombre
             groupsStore[nuevoNombre.trim()] = groupsStore[oldGroupName];
-            // Eliminar el grupo con el nombre antiguo
             delete groupsStore[oldGroupName];
             
-            // Si el grupo editado es el actual, actualizar currentGroup
             if (currentGroup === oldGroupName) {
                 currentGroup = nuevoNombre.trim();
             }
@@ -822,6 +1253,7 @@
             showToast('Grupo actualizado');
         }
     }
+    
     function renderGroupsList() {
         const groupsList = document.getElementById('groupsList');
         groupsList.innerHTML = '';
@@ -831,12 +1263,10 @@
         Object.keys(groupsStore).forEach(groupName => {
             const group = groupsStore[groupName];
             
-            // Nuevo: Filtrar por ciclo activo si está establecido
             if (activeCycleId && group.ciclo !== activeCycleId) {
                 return;
             }
             
-            // Nuevo: Filtrar por término de búsqueda
             if (searchTerm && !groupName.toLowerCase().includes(searchTerm.toLowerCase())) {
                 return;
             }
@@ -861,7 +1291,6 @@
             groupsList.appendChild(groupItem);
         });
         
-        // Nuevo: Mostrar mensaje si no hay resultados
         if (!hasVisibleGroups) {
             groupsList.innerHTML = '<div class="no-results">No se encontraron grupos</div>';
         }
@@ -922,6 +1351,9 @@
         document.getElementById('currentGroupTitle').textContent = `Asistencia - ${groupName}`;
         renderPartialSelector();
         actualizarTablaCompleta();
+        loadEvaluations();
+        renderEvaluations();
+        renderReporteCalificaciones();
         showAsistenciaScreen();
     }
 
@@ -966,7 +1398,6 @@
             historial: {}
         };
         
-        // Inicializar historial para alumnos existentes
         nombres.forEach(nombre => {
             partials[name].historial[nombre] = {};
         });
@@ -981,16 +1412,15 @@
         const newPartial = select.value;
         
         if (newPartial !== currentPartial) {
-            // Guardar estado actual
             saveCurrentPartialState();
-            
-            // Cambiar al nuevo parcial
             currentPartial = newPartial;
             const currentPartialData = partials[currentPartial];
             fechasRegistradas = currentPartialData.fechas.map(f => ({mes: f.mes, dia: f.dia}));
             
             updatePartialInfo();
             actualizarTablaCompleta();
+            renderEvaluations();
+            renderReporteCalificaciones();
             saveCurrentGroup();
         }
     }
@@ -1023,10 +1453,8 @@
         const tablaBody = document.getElementById('tablaBody');
         const currentPartialData = partials[currentPartial];
         
-        // Ordenar fechas
         fechasRegistradas.sort((a, b) => a.mes - b.mes || a.dia - b.dia);
         
-        // Encabezados
         tablaHeader.innerHTML = `
             <tr>
                 <th>Alumno</th>
@@ -1035,19 +1463,23 @@
             </tr>
         `;
         
-        // Cuerpo de la tabla
         tablaBody.innerHTML = '';
         nombres.forEach((nombre, idx) => {
             const tr = document.createElement('tr');
             
-            // Celda del nombre
             const tdNombre = document.createElement('td');
             tdNombre.className = 'nombre-alumno';
             tdNombre.textContent = nombre;
             tdNombre.onclick = () => editarNombre(idx);
+            
+            // Verificar faltas para resaltar en rojo
+            const faltasCount = countFaltas(nombre);
+            if (faltasCount > 3) {
+                tdNombre.classList.add('student-name-excess-faltas');
+            }
+            
             tr.appendChild(tdNombre);
             
-            // Celdas de asistencia
             fechasRegistradas.forEach(fecha => {
                 const fechaKey = `${fecha.mes}-${fecha.dia}`;
                 const td = document.createElement('td');
@@ -1058,15 +1490,14 @@
                 
                 if (valor === '.') {
                     td.classList.add('asistencia');
-                } else if (valor === '/') {
+                } else if (valor === '/' || valor === 'F') {
                     td.classList.add('falta');
                 }
                 
-                td.onclick = () => toggleAsistencia(nombre, fechaKey, td);
+                td.onclick = () => openEditModal(nombre, fechaKey, td);
                 tr.appendChild(td);
             });
             
-            // Celda vacía final
             const tdEmpty = document.createElement('td');
             tdEmpty.className = 'empty-cell';
             tdEmpty.onclick = agregarColumna;
@@ -1075,7 +1506,6 @@
             tablaBody.appendChild(tr);
         });
         
-        // Fila para agregar alumnos
         const trAdd = document.createElement('tr');
         const tdAdd = document.createElement('td');
         tdAdd.colSpan = fechasRegistradas.length + 2;
@@ -1089,6 +1519,79 @@
         actualizarInterfaz();
     }
 
+    // Contar faltas de un alumno
+    function countFaltas(nombre) {
+        const currentPartialData = partials[currentPartial];
+        let count = 0;
+        
+        fechasRegistradas.forEach(fecha => {
+            const fechaKey = `${fecha.mes}-${fecha.dia}`;
+            const valor = currentPartialData.historial[nombre]?.[fechaKey];
+            if (valor === '/' || valor === 'F') {
+                count++;
+            }
+        });
+        
+        return count;
+    }
+
+    // Modal para editar asistencia
+    function openEditModal(nombre, fechaKey, cell) {
+        currentEditCell = cell;
+        currentEditNombre = nombre;
+        currentEditFechaKey = fechaKey;
+        
+        const currentPartialData = partials[currentPartial];
+        const currentValue = currentPartialData.historial[nombre]?.[fechaKey] || '';
+        
+        document.getElementById('customAttendanceValue').value = currentValue;
+        
+        // Seleccionar opción actual
+        const options = document.querySelectorAll('.modal-option');
+        options.forEach(option => {
+            option.classList.remove('selected');
+            if (option.dataset.value === currentValue) {
+                option.classList.add('selected');
+                selectedAttendanceValue = currentValue;
+            }
+        });
+        
+        document.getElementById('modalEditarAsistencia').style.display = 'block';
+    }
+
+    function closeEditModal() {
+        document.getElementById('modalEditarAsistencia').style.display = 'none';
+        currentEditCell = null;
+        currentEditNombre = null;
+        currentEditFechaKey = null;
+        selectedAttendanceValue = '';
+    }
+
+    function saveAttendance() {
+        if (!currentEditNombre || !currentEditFechaKey) return;
+        
+        const currentPartialData = partials[currentPartial];
+        if (!currentPartialData.historial[currentEditNombre]) {
+            currentPartialData.historial[currentEditNombre] = {};
+        }
+        
+        currentPartialData.historial[currentEditNombre][currentEditFechaKey] = selectedAttendanceValue;
+        
+        // Actualizar celda
+        currentEditCell.textContent = selectedAttendanceValue;
+        currentEditCell.className = 'celda-asistencia';
+        
+        if (selectedAttendanceValue === '.') {
+            currentEditCell.classList.add('asistencia');
+        } else if (selectedAttendanceValue === '/' || selectedAttendanceValue === 'F') {
+            currentEditCell.classList.add('falta');
+        }
+        
+        saveCurrentGroup();
+        actualizarTablaCompleta();
+        renderReporteCalificaciones();
+        closeEditModal();
+    }
 
     function agregarColumna() {
         const mes = parseInt(document.getElementById('inputMes').value) || new Date().getMonth() + 1;
@@ -1124,16 +1627,28 @@
         nombres.push(nombre);
         nombres.sort((a, b) => a.localeCompare(b));
         
-        // Agregar a todos los parciales
         Object.keys(partials).forEach(partialName => {
             if (!partials[partialName].historial[nombre]) {
                 partials[partialName].historial[nombre] = {};
             }
         });
         
+        // Agregar a evaluaciones
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        if (evaluations[evaluationKey]) {
+            evaluations[evaluationKey].forEach(evaluation => {
+                if (!evaluation.scores[nombre]) {
+                    evaluation.scores[nombre] = '';
+                }
+            });
+        }
+        
         document.getElementById('nuevoAlumno').value = '';
         actualizarTablaCompleta();
+        renderEvaluations();
+        renderReporteCalificaciones();
         saveCurrentGroup();
+        saveEvaluations();
     }
 
     function agregarAlumnoDesdeTabla() {
@@ -1150,7 +1665,7 @@
             const viejoNombre = nombres[idx];
             nombres[idx] = nuevoNombre.trim();
             
-            // Actualizar en todos los parciales
+            // Actualizar en parciales
             Object.keys(partials).forEach(partialName => {
                 if (partials[partialName].historial[viejoNombre]) {
                     partials[partialName].historial[nuevoNombre] = partials[partialName].historial[viejoNombre];
@@ -1158,42 +1673,24 @@
                 }
             });
             
+            // Actualizar en evaluaciones
+            const evaluationKey = `${currentGroup}_${currentPartial}`;
+            if (evaluations[evaluationKey]) {
+                evaluations[evaluationKey].forEach(evaluation => {
+                    if (evaluation.scores[viejoNombre] !== undefined) {
+                        evaluation.scores[nuevoNombre] = evaluation.scores[viejoNombre];
+                        delete evaluation.scores[viejoNombre];
+                    }
+                });
+            }
+            
             actualizarTablaCompleta();
+            renderEvaluations();
+            renderReporteCalificaciones();
             saveCurrentGroup();
+            saveEvaluations();
         }
     }
-
-function toggleAsistencia(nombre, fechaKey, td) {
-    const currentPartialData = partials[currentPartial];
-    
-    if (!currentPartialData.historial[nombre]) {
-        currentPartialData.historial[nombre] = {};
-    }
-    
-    let valor = currentPartialData.historial[nombre][fechaKey] || '';
-    
-    // Alternar entre asistencia, falta y vacío
-    if (valor === '.') {
-        valor = '/'; // Cambiar a falta
-    } else if (valor === '/') {
-        valor = ''; // Vaciar
-    } else {
-        valor = '.'; // Marcar asistencia
-    }
-    
-    currentPartialData.historial[nombre][fechaKey] = valor;
-    
-    // Actualizar apariencia de la celda
-    td.textContent = valor;
-    td.className = 'celda-asistencia';
-    if (valor === '.') {
-        td.classList.add('asistencia');
-    } else if (valor === '/') {
-        td.classList.add('falta');
-    }
-    
-    saveCurrentGroup();
-}
 
     function iniciarAsistencia() {
         const mes = parseInt(document.getElementById('inputMes').value);
@@ -1209,10 +1706,7 @@ function toggleAsistencia(nombre, fechaKey, td) {
             return;
         }
         
-        // Agregar fecha si no existe
         agregarColumna();
-        
-        // Reiniciar índice
         indice = 0;
         actualizarInterfaz();
     }
@@ -1275,6 +1769,532 @@ function toggleAsistencia(nombre, fechaKey, td) {
         saveCurrentGroup();
     }
 
+    // Gestión de evaluaciones
+    function loadEvaluations() {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        if (!evaluations[evaluationKey]) {
+            evaluations[evaluationKey] = [];
+        }
+    }
+
+    function saveEvaluations() {
+        localStorage.setItem('asistencia_evaluations', JSON.stringify(evaluations));
+    }
+
+    function renderEvaluations() {
+        const evaluationsList = document.getElementById('evaluationsList');
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        
+        evaluationsList.innerHTML = '';
+        
+        if (!evaluations[evaluationKey] || evaluations[evaluationKey].length === 0) {
+            evaluationsList.innerHTML = '<div class="no-results">No hay evaluaciones creadas para este parcial</div>';
+            return;
+        }
+        
+        evaluations[evaluationKey].forEach((evaluation, index) => {
+            const evaluationCard = document.createElement('div');
+            evaluationCard.className = 'evaluation-card';
+            
+            let scoresHTML = '';
+            nombres.forEach(nombre => {
+                const score = evaluation.scores[nombre] || '';
+                scoresHTML += `
+                    <div class="score-item">
+                        <div class="score-name">${nombre}</div>
+                        <input type="number" class="score-input" 
+                               min="0" max="100" 
+                               value="${score}" 
+                               onchange="updateScore(${index}, '${nombre}', this.value)"
+                               placeholder="0-100">
+                    </div>
+                `;
+            });
+            
+            evaluationCard.innerHTML = `
+                <div class="evaluation-header">
+                    <div class="evaluation-title">${evaluation.nombre}</div>
+                    <div class="evaluation-percentage">${evaluation.porcentaje}%</div>
+                </div>
+                <div class="evaluation-description">${evaluation.descripcion || 'Sin descripción'}</div>
+                
+                <div class="rubrica-container">
+                    <div class="rubrica-title">
+                        <i class="fas fa-percentage"></i>
+                        Rúbrica de Evaluación
+                    </div>
+                    <div class="rubrica-item">
+                        <div class="rubrica-label">Porcentaje del parcial:</div>
+                        <div class="rubrica-value">${evaluation.porcentaje}%</div>
+                    </div>
+                    <div class="rubrica-item">
+                        <div class="rubrica-label">Total de puntos:</div>
+                        <div class="rubrica-value">100</div>
+                    </div>
+                </div>
+                
+                <div class="evaluation-scores">
+                    ${scoresHTML}
+                </div>
+                
+                <div class="evaluation-actions">
+                    <button class="btn btn-warning" onclick="editEvaluation(${index})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteEvaluation(${index})">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            `;
+            
+            evaluationsList.appendChild(evaluationCard);
+        });
+    }
+
+    function createEvaluation() {
+        const nombre = document.getElementById('inputEvaluacionNombre').value.trim();
+        const porcentaje = parseInt(document.getElementById('inputEvaluacionPorcentaje').value);
+        const descripcion = document.getElementById('inputEvaluacionDescripcion').value.trim();
+        
+        if (!nombre) {
+            alert('Ingresa nombre de la evaluación');
+            return;
+        }
+        
+        if (!porcentaje || porcentaje < 1 || porcentaje > 100) {
+            alert('Ingresa un porcentaje válido (1-100%)');
+            return;
+        }
+        
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        
+        // Verificar que no se exceda el 100% de evaluación
+        const totalPorcentaje = evaluations[evaluationKey]?.reduce((sum, evalItem) => sum + evalItem.porcentaje, 0) || 0;
+        if (totalPorcentaje + porcentaje > 100) {
+            alert(`El porcentaje total excede 100%. Actual: ${totalPorcentaje}% + ${porcentaje}% = ${totalPorcentaje + porcentaje}%`);
+            return;
+        }
+        
+        const newEvaluation = {
+            id: Date.now(),
+            nombre: nombre,
+            porcentaje: porcentaje,
+            descripcion: descripcion,
+            scores: {}
+        };
+        
+        nombres.forEach(nombre => {
+            newEvaluation.scores[nombre] = '';
+        });
+        
+        if (!evaluations[evaluationKey]) {
+            evaluations[evaluationKey] = [];
+        }
+        
+        evaluations[evaluationKey].push(newEvaluation);
+        
+        saveEvaluations();
+        renderEvaluations();
+        renderReporteCalificaciones();
+        
+        document.getElementById('inputEvaluacionNombre').value = '';
+        document.getElementById('inputEvaluacionPorcentaje').value = '';
+        document.getElementById('inputEvaluacionDescripcion').value = '';
+        
+        showToast('Evaluación creada');
+    }
+
+    function editEvaluation(index) {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const evaluation = evaluations[evaluationKey][index];
+        
+        const nuevoNombre = prompt('Nuevo nombre de la evaluación:', evaluation.nombre);
+        if (!nuevoNombre) return;
+        
+        const nuevoPorcentaje = prompt('Nuevo porcentaje (%):', evaluation.porcentaje);
+        if (!nuevoPorcentaje) return;
+        
+        const nuevaDescripcion = prompt('Nueva descripción:', evaluation.descripcion || '');
+        
+        const porcentajeNum = parseInt(nuevoPorcentaje);
+        if (isNaN(porcentajeNum) || porcentajeNum < 1 || porcentajeNum > 100) {
+            alert('Porcentaje inválido');
+            return;
+        }
+        
+        // Verificar que no se exceda el 100%
+        const totalPorcentaje = evaluations[evaluationKey].reduce((sum, evalItem, idx) => {
+            if (idx === index) return sum;
+            return sum + evalItem.porcentaje;
+        }, 0);
+        
+        if (totalPorcentaje + porcentajeNum > 100) {
+            alert(`El porcentaje total excede 100%. Actual sin esta: ${totalPorcentaje}% + ${porcentajeNum}% = ${totalPorcentaje + porcentajeNum}%`);
+            return;
+        }
+        
+        evaluation.nombre = nuevoNombre.trim();
+        evaluation.porcentaje = porcentajeNum;
+        evaluation.descripcion = nuevaDescripcion || '';
+        
+        saveEvaluations();
+        renderEvaluations();
+        renderReporteCalificaciones();
+        showToast('Evaluación actualizada');
+    }
+
+    function deleteEvaluation(index) {
+        if (!confirm('¿Eliminar esta evaluación?')) return;
+        
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        evaluations[evaluationKey].splice(index, 1);
+        
+        saveEvaluations();
+        renderEvaluations();
+        renderReporteCalificaciones();
+        showToast('Evaluación eliminada');
+    }
+
+    function updateScore(evaluationIndex, studentName, score) {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const evaluation = evaluations[evaluationKey][evaluationIndex];
+        
+        const scoreNum = score === '' ? '' : parseFloat(score);
+        if (scoreNum !== '' && (scoreNum < 0 || scoreNum > 100)) {
+            alert('La calificación debe estar entre 0 y 100');
+            return;
+        }
+        
+        evaluation.scores[studentName] = scoreNum === '' ? '' : scoreNum;
+        saveEvaluations();
+        renderReporteCalificaciones();
+    }
+
+    // Reportes y calificaciones
+    function renderReporteCalificaciones() {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const currentEvaluations = evaluations[evaluationKey] || [];
+        
+        // Calcular totales
+        let totalPorcentaje = 0;
+        let totalEvaluaciones = 0;
+        let promedioGeneral = 0;
+        let alumnosConCalificacion = 0;
+        
+        const calificacionesFinales = {};
+        
+        nombres.forEach(nombre => {
+            let totalPuntos = 0;
+            let totalPorcentajeAlumno = 0;
+            
+            currentEvaluations.forEach(evaluation => {
+                const score = evaluation.scores[nombre];
+                if (score !== '' && score !== undefined) {
+                    totalPuntos += (score / 100) * evaluation.porcentaje;
+                    totalPorcentajeAlumno += evaluation.porcentaje;
+                }
+            });
+            
+            const calificacionFinal = totalPorcentajeAlumno > 0 ? (totalPuntos / totalPorcentajeAlumno) * 100 : 0;
+            calificacionesFinales[nombre] = calificacionFinal;
+            
+            if (totalPorcentajeAlumno > 0) {
+                promedioGeneral += calificacionFinal;
+                alumnosConCalificacion++;
+            }
+        });
+        
+        if (alumnosConCalificacion > 0) {
+            promedioGeneral = promedioGeneral / alumnosConCalificacion;
+        }
+        
+        totalPorcentaje = currentEvaluations.reduce((sum, evalItem) => sum + evalItem.porcentaje, 0);
+        totalEvaluaciones = currentEvaluations.length;
+        
+        // Actualizar grid de totales
+        const totalsGrid = document.getElementById('totalsGrid');
+        totalsGrid.innerHTML = `
+            <div class="total-item">
+                <div class="total-label">Total Evaluaciones</div>
+                <div class="total-value">${totalEvaluaciones}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Porcentaje Total</div>
+                <div class="total-value">${totalPorcentaje}%</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Alumnos Evaluados</div>
+                <div class="total-value">${alumnosConCalificacion}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Promedio General</div>
+                <div class="total-value">${promedioGeneral.toFixed(1)}</div>
+            </div>
+        `;
+        
+        // Crear tabla de calificaciones
+        const calificacionesBody = document.getElementById('calificacionesBody');
+        const calificacionesHeader = document.getElementById('calificacionesHeader');
+        
+        calificacionesHeader.innerHTML = `
+            <tr>
+                <th>Alumno</th>
+                ${currentEvaluations.map(e => `<th>${e.nombre} (${e.porcentaje}%)</th>`).join('')}
+                <th>Faltas</th>
+                <th>Calificación Final</th>
+                <th>Estado</th>
+            </tr>
+        `;
+        
+        calificacionesBody.innerHTML = '';
+        
+        nombres.forEach(nombre => {
+            const tr = document.createElement('tr');
+            
+            // Nombre del alumno
+            const tdNombre = document.createElement('td');
+            tdNombre.className = 'nombre-alumno';
+            tdNombre.textContent = nombre;
+            
+            const faltasCount = countFaltas(nombre);
+            if (faltasCount > 3) {
+                tdNombre.classList.add('student-name-excess-faltas');
+            }
+            
+            tr.appendChild(tdNombre);
+            
+            // Calificaciones por evaluación
+            currentEvaluations.forEach(evaluation => {
+                const td = document.createElement('td');
+                const score = evaluation.scores[nombre];
+                td.textContent = score !== '' && score !== undefined ? score : 'N/A';
+                
+                if (score === '' || score === undefined) {
+                    td.classList.add('missing-scores');
+                } else if (score < 70) {
+                    td.style.color = '#ef4444';
+                    td.style.fontWeight = '600';
+                } else if (score >= 90) {
+                    td.style.color = '#10b981';
+                    td.style.fontWeight = '600';
+                }
+                
+                tr.appendChild(td);
+            });
+            
+            // Faltas
+            const tdFaltas = document.createElement('td');
+            tdFaltas.textContent = faltasCount;
+            if (faltasCount > 3) {
+                tdFaltas.style.color = '#ef4444';
+                tdFaltas.style.fontWeight = '600';
+            }
+            tr.appendChild(tdFaltas);
+            
+            // Calificación final
+            const tdFinal = document.createElement('td');
+            const calificacionFinal = calificacionesFinales[nombre] || 0;
+            tdFinal.textContent = calificacionFinal.toFixed(1);
+            
+            if (calificacionFinal < 70) {
+                tdFinal.style.color = '#ef4444';
+                tdFinal.style.fontWeight = '600';
+                tdFinal.style.backgroundColor = 'rgba(239,68,68,0.1)';
+            } else if (calificacionFinal >= 90) {
+                tdFinal.style.color = '#10b981';
+                tdFinal.style.fontWeight = '600';
+                tdFinal.style.backgroundColor = 'rgba(16,185,129,0.1)';
+            }
+            
+            tr.appendChild(tdFinal);
+            
+            // Estado
+            const tdEstado = document.createElement('td');
+            if (faltasCount > 3) {
+                tdEstado.textContent = 'Exceso faltas';
+                tdEstado.style.color = '#ef4444';
+                tdEstado.style.fontWeight = '600';
+            } else if (calificacionFinal >= 70) {
+                tdEstado.textContent = 'Aprobado';
+                tdEstado.style.color = '#10b981';
+                tdEstado.style.fontWeight = '600';
+            } else {
+                tdEstado.textContent = 'Reprobado';
+                tdEstado.style.color = '#ef4444';
+                tdEstado.style.fontWeight = '600';
+            }
+            tr.appendChild(tdEstado);
+            
+            calificacionesBody.appendChild(tr);
+        });
+    }
+
+    // Exportación de reportes
+    function exportReporteExcel() {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const currentEvaluations = evaluations[evaluationKey] || [];
+        
+        const data = [
+            ['Reporte de Calificaciones', '', '', '', ''],
+            [`Grupo: ${currentGroup}`, '', `Parcial: ${currentPartial}`, '', ''],
+            ['', '', '', '', ''],
+            ['Alumno', ...currentEvaluations.map(e => `${e.nombre} (${e.porcentaje}%)`), 'Faltas', 'Calificación Final', 'Estado']
+        ];
+        
+        nombres.forEach(nombre => {
+            const faltasCount = countFaltas(nombre);
+            const calificacionFinal = calculateFinalGrade(nombre);
+            
+            const row = [nombre];
+            
+            currentEvaluations.forEach(evaluation => {
+                const score = evaluation.scores[nombre];
+                row.push(score !== '' && score !== undefined ? score : 'N/A');
+            });
+            
+            row.push(faltasCount);
+            row.push(calificacionFinal.toFixed(1));
+            
+            let estado = '';
+            if (faltasCount > 3) {
+                estado = 'Exceso faltas';
+            } else if (calificacionFinal >= 70) {
+                estado = 'Aprobado';
+            } else {
+                estado = 'Reprobado';
+            }
+            
+            row.push(estado);
+            data.push(row);
+        });
+        
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Calificaciones');
+        XLSX.writeFile(wb, `calificaciones_${currentGroup}_${currentPartial}.xlsx`);
+        showToast('Reporte Excel exportado');
+    }
+
+    function exportReportePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const currentEvaluations = evaluations[evaluationKey] || [];
+        
+        // Encabezado
+        doc.setFontSize(16);
+        doc.setTextColor(208, 0, 0);
+        doc.text('Reporte de Calificaciones', 105, 15, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Grupo: ${currentGroup}`, 20, 25);
+        doc.text(`Parcial: ${currentPartial}`, 180, 25, { align: 'right' });
+        
+        // Fecha
+        const fecha = new Date().toLocaleDateString();
+        doc.text(`Fecha: ${fecha}`, 20, 32);
+        
+        // Preparar datos para la tabla
+        const headers = ['Alumno', ...currentEvaluations.map(e => `${e.nombre}\n(${e.porcentaje}%)`), 'Faltas', 'Calificación\nFinal', 'Estado'];
+        
+        const rows = [];
+        nombres.forEach(nombre => {
+            const faltasCount = countFaltas(nombre);
+            const calificacionFinal = calculateFinalGrade(nombre);
+            
+            const row = [nombre];
+            
+            currentEvaluations.forEach(evaluation => {
+                const score = evaluation.scores[nombre];
+                row.push(score !== '' && score !== undefined ? score.toString() : 'N/A');
+            });
+            
+            row.push(faltasCount.toString());
+            row.push(calificacionFinal.toFixed(1));
+            
+            let estado = '';
+            if (faltasCount > 3) {
+                estado = 'Exceso faltas';
+            } else if (calificacionFinal >= 70) {
+                estado = 'Aprobado';
+            } else {
+                estado = 'Reprobado';
+            }
+            
+            row.push(estado);
+            rows.push(row);
+        });
+        
+        // Generar tabla
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 40,
+            theme: 'grid',
+            headStyles: { fillColor: [208, 0, 0] },
+            columnStyles: {
+                0: { cellWidth: 40 },
+                ...Object.fromEntries(
+                    headers.map((_, i) => [i, { cellWidth: i === 0 ? 40 : 25 }])
+                )
+            },
+            didDrawPage: function(data) {
+                // Pie de página
+                doc.setFontSize(10);
+                doc.text('Sistema de Control de Asistencia y Evaluaciones - UAD', 105, 285, { align: 'center' });
+            }
+        });
+        
+        doc.save(`calificaciones_${currentGroup}_${currentPartial}.pdf`);
+        showToast('Reporte PDF exportado');
+    }
+
+    function calculateFinalGrade(studentName) {
+        const evaluationKey = `${currentGroup}_${currentPartial}`;
+        const currentEvaluations = evaluations[evaluationKey] || [];
+        
+        let totalPuntos = 0;
+        let totalPorcentaje = 0;
+        
+        currentEvaluations.forEach(evaluation => {
+            const score = evaluation.scores[studentName];
+            if (score !== '' && score !== undefined) {
+                totalPuntos += (score / 100) * evaluation.porcentaje;
+                totalPorcentaje += evaluation.porcentaje;
+            }
+        });
+        
+        return totalPorcentaje > 0 ? (totalPuntos / totalPorcentaje) * 100 : 0;
+    }
+
+    // Navegación entre pestañas
+    function setupTabNavigation() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Actualizar botones activos
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Mostrar contenido de pestaña
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+                
+                // Si es la pestaña de reportes, actualizar
+                if (tabName === 'reportes') {
+                    renderReporteCalificaciones();
+                }
+            });
+        });
+    }
+
     // Navegación
     function showHomeScreen() {
         document.getElementById('homeScreen').classList.remove('hidden');
@@ -1286,7 +2306,7 @@ function toggleAsistencia(nombre, fechaKey, td) {
         document.getElementById('asistenciaScreen').classList.remove('hidden');
     }
 
-    // Exportación
+    // Exportación de asistencia
     function exportExcel() {
         if (nombres.length === 0) {
             alert('No hay datos para exportar');
@@ -1316,6 +2336,7 @@ function toggleAsistencia(nombre, fechaKey, td) {
         const data = {
             groups: groupsStore,
             cycles: cyclesStore,
+            evaluations: evaluations,
             exportDate: new Date().toISOString()
         };
         
@@ -1339,6 +2360,7 @@ function toggleAsistencia(nombre, fechaKey, td) {
                     if (confirm('¿Importar datos? Se reemplazarán los actuales.')) {
                         groupsStore = data.groups || {};
                         cyclesStore = data.cycles || {};
+                        evaluations = data.evaluations || {};
                         saveAllData();
                         initializeApp();
                         showToast('Datos importados');
@@ -1352,7 +2374,7 @@ function toggleAsistencia(nombre, fechaKey, td) {
         input.click();
     }
 
-    // Nuevo: Función de búsqueda
+    // Búsqueda
     function performSearch() {
         searchTerm = document.getElementById('searchInput').value.trim();
         renderCyclesList();
@@ -1380,18 +2402,55 @@ function toggleAsistencia(nombre, fechaKey, td) {
         document.getElementById('btnFalta').addEventListener('click', marcarFalta);
         document.getElementById('btnAgregarAlumno').addEventListener('click', agregarAlumno);
         
+        // Evaluaciones
+        document.getElementById('btnCrearEvaluacion').addEventListener('click', createEvaluation);
+        
         // Exportación
         document.getElementById('btnExportExcel').addEventListener('click', exportExcel);
         document.getElementById('btnExportAll').addEventListener('click', exportAllData);
         document.getElementById('btnImportAll').addEventListener('click', importAllData);
-        document.getElementById('btnExportParcial').addEventListener('click', exportExcel);
+        document.getElementById('btnExportReporteExcel').addEventListener('click', exportReporteExcel);
+        document.getElementById('btnExportReportePDF').addEventListener('click', exportReportePDF);
         
-        // Nuevo: Selector de ciclo activo
+        // Selector de ciclo activo
         document.getElementById('selectActiveCycle').addEventListener('change', setActiveCycle);
         
-        // Nuevo: Búsqueda
+        // Búsqueda
         document.getElementById('searchInput').addEventListener('input', performSearch);
         
+        // Modal de asistencia
+        document.querySelector('.close-modal').addEventListener('click', closeEditModal);
+        document.getElementById('btnSaveAttendance').addEventListener('click', saveAttendance);
+        document.getElementById('btnClearAttendance').addEventListener('click', function() {
+            selectedAttendanceValue = '';
+            document.getElementById('customAttendanceValue').value = '';
+            document.querySelectorAll('.modal-option').forEach(opt => opt.classList.remove('selected'));
+        });
+        
+        document.querySelectorAll('.modal-option').forEach(option => {
+            option.addEventListener('click', function() {
+                selectedAttendanceValue = this.dataset.value;
+                document.getElementById('customAttendanceValue').value = selectedAttendanceValue;
+                document.querySelectorAll('.modal-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        document.getElementById('btnCustomAttendance').addEventListener('click', function() {
+            const customValue = document.getElementById('customAttendanceValue').value.trim();
+            if (customValue) {
+                selectedAttendanceValue = customValue;
+                document.querySelectorAll('.modal-option').forEach(opt => opt.classList.remove('selected'));
+            }
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('modalEditarAsistencia');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        });
     }
     </script>
 </body>
