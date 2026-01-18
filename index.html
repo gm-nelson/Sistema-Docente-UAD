@@ -3,13 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Control de Asistencia y Evaluaciones</title>
+    <title>Control de Asistencia</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
     :root {
         --radius: 12px;
@@ -340,6 +338,7 @@
         min-width: 200px;
     }
     
+    /* Nuevos estilos para las modificaciones */
     .search-container {
         display: flex;
         gap: 10px;
@@ -406,297 +405,6 @@
         align-items: center;
         gap: 8px;
     }
-    
-    /* Nuevos estilos para módulo de evaluaciones */
-    .evaluations-container {
-        background: #f8fafc;
-        padding: 15px;
-        border-radius: var(--border-radius);
-        margin: 15px 0;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .evaluation-item {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: var(--border-radius);
-        padding: 15px;
-        margin-bottom: 10px;
-        transition: var(--transition);
-    }
-    
-    .evaluation-item:hover {
-        border-color: var(--uad-red);
-        transform: translateY(-1px);
-    }
-    
-    .evaluation-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    
-    .evaluation-name {
-        font-weight: 600;
-        color: #334155;
-        font-size: 16px;
-    }
-    
-    .evaluation-description {
-        color: #64748b;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-    
-    .rubric-container {
-        background: #f1f5f9;
-        padding: 10px;
-        border-radius: 4px;
-        margin-bottom: 10px;
-    }
-    
-    .rubric-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-        border-bottom: 1px dashed #cbd5e1;
-    }
-    
-    .rubric-item:last-child {
-        border-bottom: none;
-    }
-    
-    .rubric-label {
-        color: #475569;
-        font-size: 14px;
-    }
-    
-    .rubric-percentage {
-        color: var(--uad-red);
-        font-weight: 600;
-        font-size: 14px;
-    }
-    
-    .grade-input {
-        width: 80px;
-        padding: 6px 8px;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        font-family: inherit;
-        text-align: center;
-    }
-    
-    .grade-input:focus {
-        outline: none;
-        border-color: var(--uad-red);
-    }
-    
-    .final-grade {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--uad-red);
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 2px solid #e2e8f0;
-        text-align: right;
-    }
-    
-    .grades-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background: white;
-        border-radius: var(--radius);
-        overflow: hidden;
-        box-shadow: var(--shadow);
-    }
-    
-    .grades-table th, .grades-table td {
-        border: 1px solid #e2e8f0;
-        padding: 8px;
-        text-align: center;
-        font-size: 14px;
-    }
-    
-    .grades-table th {
-        background: #f8fafc;
-        font-weight: 600;
-        color: #334155;
-    }
-    
-    .student-name-red {
-        color: #ef4444 !important;
-        font-weight: 600;
-    }
-    
-    .total-failures {
-        color: #ef4444;
-        font-weight: 600;
-    }
-    
-    .evaluations-actions {
-        display: flex;
-        gap: 10px;
-        margin: 15px 0;
-        flex-wrap: wrap;
-    }
-    
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-    }
-    
-    .modal {
-        background: white;
-        border-radius: var(--radius);
-        padding: 25px;
-        min-width: 400px;
-        max-width: 600px;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: var(--shadow);
-    }
-    
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f1f5f9;
-    }
-    
-    .modal-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: #334155;
-    }
-    
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 20px;
-        color: #64748b;
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 4px;
-    }
-    
-    .modal-close:hover {
-        background: #f1f5f9;
-        color: #334155;
-    }
-    
-    .rubric-editor {
-        margin: 15px 0;
-    }
-    
-    .rubric-row {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 10px;
-        align-items: center;
-    }
-    
-    .rubric-row input {
-        flex: 1;
-        padding: 8px;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        font-family: inherit;
-    }
-    
-    .percentage-input {
-        width: 80px;
-        text-align: center;
-    }
-    
-    .rubric-total {
-        text-align: right;
-        font-weight: 600;
-        color: var(--uad-red);
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 2px solid #f1f5f9;
-    }
-    
-    .attendance-symbols-modal .symbols-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-        margin: 20px 0;
-    }
-    
-    .symbol-option {
-        padding: 10px;
-        border: 2px solid #e2e8f0;
-        border-radius: 6px;
-        text-align: center;
-        cursor: pointer;
-        transition: var(--transition);
-        font-family: monospace;
-        font-size: 16px;
-    }
-    
-    .symbol-option:hover {
-        border-color: var(--uad-red);
-        background: rgba(208,0,0,0.05);
-    }
-    
-    .symbol-option.selected {
-        border-color: var(--uad-red);
-        background: rgba(208,0,0,0.1);
-        font-weight: 600;
-    }
-    
-    .current-symbols {
-        margin: 15px 0;
-        padding: 10px;
-        background: #f8fafc;
-        border-radius: 6px;
-        font-family: monospace;
-        font-size: 14px;
-        min-height: 40px;
-        word-break: break-all;
-    }
-    
-    .symbol-action {
-        padding: 8px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-family: inherit;
-        font-weight: 500;
-        margin-right: 10px;
-    }
-    
-    .symbol-action.clear {
-        background: #ef4444;
-        color: white;
-    }
-    
-    .symbol-action.clear:hover {
-        background: #dc2626;
-    }
-    
-    .symbol-action.save {
-        background: var(--uad-red);
-        color: white;
-    }
-    
-    .symbol-action.save:hover {
-        background: var(--uad-dark-red);
-    }
     </style>
 </head>
 <body>
@@ -709,8 +417,8 @@
                         <img src="https://portal.uad.mx/assets/dist/img/logo.png" alt="Logo UAD" id="uadLogo">
                     </div>
                     <div class="header-content">
-                        <h1>Control de Asistencia y Evaluaciones</h1>
-                        <p>Sistema de gestión de ciclos, grupos, asistencias y evaluaciones</p>
+                        <h1>Control de Asistencia</h1>
+                        <p>Sistema de gestión de ciclos, grupos y asistencias</p>
                     </div>
                     <div style="width: 120px;"></div> <!-- Espacio para balancear el logo -->
                 </div>
@@ -794,7 +502,7 @@
             </div>
         </div>
         
-        <!-- Pantalla de Asistencia y Evaluaciones -->
+        <!-- Pantalla de Asistencia -->
         <div id="asistenciaScreen" class="hidden">
             <div class="header">
                 <div class="logos-container">
@@ -807,7 +515,7 @@
                             <i class="fas fa-arrow-left"></i> Volver al Inicio
                         </button>
                     </div>
-                    <div style="width: 120px;"></div>
+                    <div style="width: 120px;"></div> <!-- Espacio para balancear el logo -->
                 </div>
             </div>
             
@@ -845,43 +553,6 @@
                 </div>
             </div>
             
-            <!-- Módulo de Evaluaciones -->
-            <div class="card">
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i>
-                    Evaluaciones
-                </div>
-                
-                <div class="evaluations-actions">
-                    <button id="btnNuevaEvaluacion" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Nueva Evaluación
-                    </button>
-                    <button id="btnExportEvaluaciones" class="btn btn-success">
-                        <i class="fas fa-file-excel"></i> Exportar Calificaciones
-                    </button>
-                    <button id="btnExportPDF" class="btn btn-warning">
-                        <i class="fas fa-file-pdf"></i> Exportar PDF
-                    </button>
-                    <button id="btnImportEvaluaciones" class="btn btn-dark">
-                        <i class="fas fa-file-import"></i> Importar Calificaciones
-                    </button>
-                </div>
-                
-                <div class="evaluations-container" id="evaluationsList">
-                    <!-- Las evaluaciones se cargarán aquí -->
-                </div>
-                
-                <!-- Tabla de Calificaciones -->
-                <div id="gradesTableContainer" class="hidden">
-                    <div style="overflow-x: auto; margin-top: 20px;">
-                        <table class="grades-table" id="gradesTable">
-                            <thead id="gradesHeader"></thead>
-                            <tbody id="gradesBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Tabla de Asistencia -->
             <div class="card">
                 <div class="export-options">
@@ -903,64 +574,6 @@
         </div>
     </div>
 
-    <!-- Modal para Símbolos de Asistencia -->
-    <div id="attendanceSymbolsModal" class="modal-overlay hidden">
-        <div class="modal attendance-symbols-modal">
-            <div class="modal-header">
-                <div class="modal-title">Símbolos de Asistencia</div>
-                <button class="modal-close" onclick="closeSymbolsModal()">&times;</button>
-            </div>
-            <div class="symbols-grid" id="symbolsGrid">
-                <!-- Los símbolos se cargan aquí -->
-            </div>
-            <div>
-                <div style="margin: 15px 0; color: #64748b; font-size: 14px;">
-                    Símbolos actuales en la celda:
-                </div>
-                <div class="current-symbols" id="currentSymbolsDisplay"></div>
-                <div style="margin-top: 20px;">
-                    <button class="symbol-action clear" onclick="clearSelectedSymbols()">Limpiar Todo</button>
-                    <button class="symbol-action save" onclick="saveAttendanceSymbols()">Guardar</button>
-                    <button class="symbol-action" onclick="closeSymbolsModal()" style="background: #e2e8f0;">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Editar Evaluación -->
-    <div id="editEvaluationModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Editar Evaluación</div>
-                <button class="modal-close" onclick="closeEditEvaluationModal()">&times;</button>
-            </div>
-            <div>
-                <div style="margin-bottom: 15px;">
-                    <input type="text" id="editEvaluationName" placeholder="Nombre de la evaluación" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <textarea id="editEvaluationDescription" placeholder="Descripción" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 80px; font-family: inherit;"></textarea>
-                </div>
-                
-                <div class="rubric-editor">
-                    <div style="margin-bottom: 10px; font-weight: 500; color: #334155;">Rúbrica (Total debe sumar 100%)</div>
-                    <div id="rubricRows">
-                        <!-- Las filas de rúbrica se cargan aquí -->
-                    </div>
-                    <button onclick="addRubricRow()" style="padding: 8px 15px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; margin-top: 10px;">
-                        <i class="fas fa-plus"></i> Agregar Criterio
-                    </button>
-                    <div class="rubric-total" id="rubricTotal">Total: 0%</div>
-                </div>
-                
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button onclick="saveEvaluationChanges()" style="padding: 10px 20px; background: var(--uad-red); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Guardar</button>
-                    <button onclick="closeEditEvaluationModal()" style="padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="toast hidden" id="toast">Guardado</div>
 
     <script>
@@ -973,35 +586,19 @@
     let indice = 0;
     let currentPartial = 'Primer Parcial';
     let partials = {};
-    let activeCycleId = '';
-    let searchTerm = '';
-
-    // Nuevas variables para evaluaciones
-    let currentEvaluationId = null;
-    let attendanceModalData = null;
-
-    // Símbolos disponibles para asistencia
-    const ATTENDANCE_SYMBOLS = [
-        { symbol: '.', label: 'Asistencia' },
-        { symbol: '/', label: 'Falta' },
-        { symbol: 'A', label: 'Ausente' },
-        { symbol: 'J', label: 'Justificado' },
-        { symbol: 'R', label: 'Retardo' },
-        { symbol: 'F', label: 'Falta administrativa' },
-        { symbol: 'X', label: 'Falta grave' }
-    ];
+    let activeCycleId = ''; // Nuevo: ID del ciclo activo
+    let searchTerm = ''; // Nuevo: término de búsqueda
 
     // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
         setupEventListeners();
         setupDefaultDates();
-        setupSymbolsModal();
     });
 
     function initializeApp() {
         loadAllData();
-        renderActiveCycleSelector();
+        renderActiveCycleSelector(); // Nuevo: renderizar selector de ciclo activo
         renderCyclesList();
         renderGroupsList();
         showHomeScreen();
@@ -1023,11 +620,11 @@
         try {
             const groupsData = localStorage.getItem('asistencia_groups');
             const cyclesData = localStorage.getItem('asistencia_cycles');
-            const activeCycleData = localStorage.getItem('asistencia_activeCycle');
+            const activeCycleData = localStorage.getItem('asistencia_activeCycle'); // Nuevo: cargar ciclo activo
             
             groupsStore = groupsData ? JSON.parse(groupsData) : {};
             cyclesStore = cyclesData ? JSON.parse(cyclesData) : {};
-            activeCycleId = activeCycleData || '';
+            activeCycleId = activeCycleData || ''; // Nuevo: establecer ciclo activo
         } catch (error) {
             groupsStore = {};
             cyclesStore = {};
@@ -1038,7 +635,7 @@
     function saveAllData() {
         localStorage.setItem('asistencia_groups', JSON.stringify(groupsStore));
         localStorage.setItem('asistencia_cycles', JSON.stringify(cyclesStore));
-        localStorage.setItem('asistencia_activeCycle', activeCycleId);
+        localStorage.setItem('asistencia_activeCycle', activeCycleId); // Nuevo: guardar ciclo activo
         showToast('Datos guardados');
     }
 
@@ -1049,7 +646,7 @@
         setTimeout(() => toast.classList.add('hidden'), 2000);
     }
 
-    // Renderizar selector de ciclo activo
+    // Nuevo: Renderizar selector de ciclo activo
     function renderActiveCycleSelector() {
         const select = document.getElementById('selectActiveCycle');
         select.innerHTML = '<option value="">Mostrar todos los ciclos</option>';
@@ -1064,7 +661,7 @@
         });
     }
 
-    // Cambiar ciclo activo
+    // Nuevo: Cambiar ciclo activo
     function setActiveCycle() {
         const select = document.getElementById('selectActiveCycle');
         activeCycleId = select.value;
@@ -1079,6 +676,7 @@
         const nuevoNombre = prompt('Nuevo nombre del ciclo:', cycle.nombre);
         
         if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== cycle.nombre) {
+            // Verificar si ya existe un ciclo con ese nombre
             const nombreExistente = Object.values(cyclesStore).some(
                 c => c.nombre === nuevoNombre.trim() && c.id !== cycleId
             );
@@ -1108,16 +706,19 @@
         Object.keys(cyclesStore).forEach(cycleId => {
             const cycle = cyclesStore[cycleId];
             
+            // Nuevo: Filtrar por ciclo activo si está establecido
             if (activeCycleId && cycleId !== activeCycleId) {
                 return;
             }
             
+            // Nuevo: Filtrar por término de búsqueda
             if (searchTerm && !cycle.nombre.toLowerCase().includes(searchTerm.toLowerCase())) {
                 return;
             }
             
             hasVisibleCycles = true;
             
+            // Item en la lista
             const cycleItem = document.createElement('div');
             cycleItem.className = `cycle-item ${cycleId === activeCycleId ? 'cycle-active' : ''}`;
             cycleItem.innerHTML = `
@@ -1133,17 +734,20 @@
             `;
             cyclesList.appendChild(cycleItem);
             
+            // Opción en el select
             const option = document.createElement('option');
             option.value = cycleId;
             option.textContent = cycle.nombre;
             cicloSelect.appendChild(option);
         });
         
+        // Nuevo: Mostrar mensaje si no hay resultados
         if (!hasVisibleCycles) {
             cyclesList.innerHTML = '<div class="no-results">No se encontraron ciclos</div>';
         }
     }
 
+    // Nuevo: Establecer ciclo como activo
     function setAsActiveCycle(cycleId) {
         activeCycleId = cycleId;
         saveAllData();
@@ -1172,7 +776,7 @@
         };
         
         saveAllData();
-        renderActiveCycleSelector();
+        renderActiveCycleSelector(); // Actualizar selector de ciclo activo
         renderCyclesList();
         document.getElementById('inputNuevoCiclo').value = '';
     }
@@ -1181,6 +785,7 @@
         if (confirm('¿Eliminar este ciclo?')) {
             delete cyclesStore[cycleId];
             
+            // Si el ciclo eliminado era el activo, limpiar selección
             if (cycleId === activeCycleId) {
                 activeCycleId = '';
             }
@@ -1196,14 +801,18 @@
         const nuevoNombre = prompt('Nuevo nombre del grupo:', oldGroupName);
         
         if (nuevoNombre && nuevoNombre.trim() && nuevoNombre !== oldGroupName) {
+            // Verificar si ya existe un grupo con ese nombre
             if (groupsStore[nuevoNombre.trim()]) {
                 alert('Ya existe un grupo con ese nombre');
                 return;
             }
             
+            // Guardar los datos del grupo con el nuevo nombre
             groupsStore[nuevoNombre.trim()] = groupsStore[oldGroupName];
+            // Eliminar el grupo con el nombre antiguo
             delete groupsStore[oldGroupName];
             
+            // Si el grupo editado es el actual, actualizar currentGroup
             if (currentGroup === oldGroupName) {
                 currentGroup = nuevoNombre.trim();
             }
@@ -1213,7 +822,6 @@
             showToast('Grupo actualizado');
         }
     }
-
     function renderGroupsList() {
         const groupsList = document.getElementById('groupsList');
         groupsList.innerHTML = '';
@@ -1223,10 +831,12 @@
         Object.keys(groupsStore).forEach(groupName => {
             const group = groupsStore[groupName];
             
+            // Nuevo: Filtrar por ciclo activo si está establecido
             if (activeCycleId && group.ciclo !== activeCycleId) {
                 return;
             }
             
+            // Nuevo: Filtrar por término de búsqueda
             if (searchTerm && !groupName.toLowerCase().includes(searchTerm.toLowerCase())) {
                 return;
             }
@@ -1251,6 +861,7 @@
             groupsList.appendChild(groupItem);
         });
         
+        // Nuevo: Mostrar mensaje si no hay resultados
         if (!hasVisibleGroups) {
             groupsList.innerHTML = '<div class="no-results">No se encontraron grupos</div>';
         }
@@ -1277,8 +888,7 @@
                 'Primer Parcial': {
                     nombre: 'Primer Parcial',
                     fechas: [],
-                    historial: {},
-                    evaluations: {}
+                    historial: {}
                 }
             },
             currentPartial: 'Primer Parcial',
@@ -1312,9 +922,6 @@
         document.getElementById('currentGroupTitle').textContent = `Asistencia - ${groupName}`;
         renderPartialSelector();
         actualizarTablaCompleta();
-        
-        renderEvaluations();
-        
         showAsistenciaScreen();
     }
 
@@ -1356,10 +963,10 @@
         partials[name] = {
             nombre: name,
             fechas: [],
-            historial: {},
-            evaluations: {}
+            historial: {}
         };
         
+        // Inicializar historial para alumnos existentes
         nombres.forEach(nombre => {
             partials[name].historial[nombre] = {};
         });
@@ -1374,8 +981,10 @@
         const newPartial = select.value;
         
         if (newPartial !== currentPartial) {
+            // Guardar estado actual
             saveCurrentPartialState();
             
+            // Cambiar al nuevo parcial
             currentPartial = newPartial;
             const currentPartialData = partials[currentPartial];
             fechasRegistradas = currentPartialData.fechas.map(f => ({mes: f.mes, dia: f.dia}));
@@ -1383,7 +992,6 @@
             updatePartialInfo();
             actualizarTablaCompleta();
             saveCurrentGroup();
-            renderEvaluations();
         }
     }
 
@@ -1402,7 +1010,6 @@
         };
         
         saveAllData();
-        renderEvaluations();
     }
 
     function saveCurrentPartialState() {
@@ -1416,8 +1023,10 @@
         const tablaBody = document.getElementById('tablaBody');
         const currentPartialData = partials[currentPartial];
         
+        // Ordenar fechas
         fechasRegistradas.sort((a, b) => a.mes - b.mes || a.dia - b.dia);
         
+        // Encabezados
         tablaHeader.innerHTML = `
             <tr>
                 <th>Alumno</th>
@@ -1426,16 +1035,19 @@
             </tr>
         `;
         
+        // Cuerpo de la tabla
         tablaBody.innerHTML = '';
         nombres.forEach((nombre, idx) => {
             const tr = document.createElement('tr');
             
+            // Celda del nombre
             const tdNombre = document.createElement('td');
             tdNombre.className = 'nombre-alumno';
             tdNombre.textContent = nombre;
             tdNombre.onclick = () => editarNombre(idx);
             tr.appendChild(tdNombre);
             
+            // Celdas de asistencia
             fechasRegistradas.forEach(fecha => {
                 const fechaKey = `${fecha.mes}-${fecha.dia}`;
                 const td = document.createElement('td');
@@ -1444,10 +1056,9 @@
                 const valor = currentPartialData.historial[nombre]?.[fechaKey] || '';
                 td.textContent = valor;
                 
-                if (valor.includes('.')) {
+                if (valor === '.') {
                     td.classList.add('asistencia');
-                }
-                if (valor.includes('/')) {
+                } else if (valor === '/') {
                     td.classList.add('falta');
                 }
                 
@@ -1455,6 +1066,7 @@
                 tr.appendChild(td);
             });
             
+            // Celda vacía final
             const tdEmpty = document.createElement('td');
             tdEmpty.className = 'empty-cell';
             tdEmpty.onclick = agregarColumna;
@@ -1463,6 +1075,7 @@
             tablaBody.appendChild(tr);
         });
         
+        // Fila para agregar alumnos
         const trAdd = document.createElement('tr');
         const tdAdd = document.createElement('td');
         tdAdd.colSpan = fechasRegistradas.length + 2;
@@ -1475,6 +1088,7 @@
         
         actualizarInterfaz();
     }
+
 
     function agregarColumna() {
         const mes = parseInt(document.getElementById('inputMes').value) || new Date().getMonth() + 1;
@@ -1510,24 +1124,16 @@
         nombres.push(nombre);
         nombres.sort((a, b) => a.localeCompare(b));
         
+        // Agregar a todos los parciales
         Object.keys(partials).forEach(partialName => {
             if (!partials[partialName].historial[nombre]) {
                 partials[partialName].historial[nombre] = {};
-            }
-            if (partials[partialName].evaluations) {
-                Object.keys(partials[partialName].evaluations).forEach(evalId => {
-                    if (!partials[partialName].evaluations[evalId].grades) {
-                        partials[partialName].evaluations[evalId].grades = {};
-                    }
-                    partials[partialName].evaluations[evalId].grades[nombre] = '';
-                });
             }
         });
         
         document.getElementById('nuevoAlumno').value = '';
         actualizarTablaCompleta();
         saveCurrentGroup();
-        renderEvaluations();
     }
 
     function agregarAlumnoDesdeTabla() {
@@ -1544,812 +1150,50 @@
             const viejoNombre = nombres[idx];
             nombres[idx] = nuevoNombre.trim();
             
+            // Actualizar en todos los parciales
             Object.keys(partials).forEach(partialName => {
                 if (partials[partialName].historial[viejoNombre]) {
                     partials[partialName].historial[nuevoNombre] = partials[partialName].historial[viejoNombre];
                     delete partials[partialName].historial[viejoNombre];
                 }
-                if (partials[partialName].evaluations) {
-                    Object.keys(partials[partialName].evaluations).forEach(evalId => {
-                        const evalData = partials[partialName].evaluations[evalId];
-                        if (evalData.grades && evalData.grades[viejoNombre] !== undefined) {
-                            evalData.grades[nuevoNombre] = evalData.grades[viejoNombre];
-                            delete evalData.grades[viejoNombre];
-                        }
-                    });
-                }
             });
             
             actualizarTablaCompleta();
             saveCurrentGroup();
-            renderEvaluations();
         }
     }
 
-    // FUNCIONES PARA SÍMBOLOS DE ASISTENCIA
-    function setupSymbolsModal() {
-        const symbolsGrid = document.getElementById('symbolsGrid');
-        symbolsGrid.innerHTML = '';
-        
-        ATTENDANCE_SYMBOLS.forEach(symbol => {
-            const div = document.createElement('div');
-            div.className = 'symbol-option';
-            div.innerHTML = `
-                <div style="font-size: 20px; margin-bottom: 5px;">${symbol.symbol}</div>
-                <div style="font-size: 12px; color: #64748b;">${symbol.label}</div>
-            `;
-            div.onclick = () => selectSymbol(symbol.symbol);
-            symbolsGrid.appendChild(div);
-        });
+function toggleAsistencia(nombre, fechaKey, td) {
+    const currentPartialData = partials[currentPartial];
+    
+    if (!currentPartialData.historial[nombre]) {
+        currentPartialData.historial[nombre] = {};
     }
-
-    function toggleAsistencia(nombre, fechaKey, td) {
-        const currentPartialData = partials[currentPartial];
-        let currentSymbols = currentPartialData.historial[nombre]?.[fechaKey] || '';
-        
-        openAttendanceSymbolsModal(nombre, fechaKey, currentSymbols);
+    
+    let valor = currentPartialData.historial[nombre][fechaKey] || '';
+    
+    // Alternar entre asistencia, falta y vacío
+    if (valor === '.') {
+        valor = '/'; // Cambiar a falta
+    } else if (valor === '/') {
+        valor = ''; // Vaciar
+    } else {
+        valor = '.'; // Marcar asistencia
     }
-
-    function openAttendanceSymbolsModal(nombre, fechaKey, currentSymbols) {
-        attendanceModalData = { nombre, fechaKey, currentSymbols };
-        
-        document.querySelectorAll('.symbol-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-        
-        document.getElementById('currentSymbolsDisplay').textContent = currentSymbols || '';
-        
-        if (currentSymbols) {
-            currentSymbols.split('').forEach(symbol => {
-                const option = [...document.querySelectorAll('.symbol-option')]
-                    .find(opt => opt.querySelector('div').textContent.includes(symbol));
-                if (option) {
-                    option.classList.add('selected');
-                }
-            });
-        }
-        
-        document.getElementById('attendanceSymbolsModal').classList.remove('hidden');
+    
+    currentPartialData.historial[nombre][fechaKey] = valor;
+    
+    // Actualizar apariencia de la celda
+    td.textContent = valor;
+    td.className = 'celda-asistencia';
+    if (valor === '.') {
+        td.classList.add('asistencia');
+    } else if (valor === '/') {
+        td.classList.add('falta');
     }
-
-    function closeSymbolsModal() {
-        document.getElementById('attendanceSymbolsModal').classList.add('hidden');
-        attendanceModalData = null;
-    }
-
-    function selectSymbol(symbol) {
-        const option = [...document.querySelectorAll('.symbol-option')]
-            .find(opt => opt.querySelector('div').textContent.includes(symbol));
-        
-        if (option) {
-            option.classList.toggle('selected');
-            updateCurrentSymbolsDisplay();
-        }
-    }
-
-    function updateCurrentSymbolsDisplay() {
-        const selectedSymbols = [...document.querySelectorAll('.symbol-option.selected')]
-            .map(opt => opt.querySelector('div').textContent.trim()[0])
-            .join('');
-        
-        document.getElementById('currentSymbolsDisplay').textContent = selectedSymbols;
-    }
-
-    function clearSelectedSymbols() {
-        document.querySelectorAll('.symbol-option.selected').forEach(option => {
-            option.classList.remove('selected');
-        });
-        updateCurrentSymbolsDisplay();
-    }
-
-    function saveAttendanceSymbols() {
-        if (!attendanceModalData) return;
-        
-        const { nombre, fechaKey } = attendanceModalData;
-        const selectedSymbols = [...document.querySelectorAll('.symbol-option.selected')]
-            .map(opt => opt.querySelector('div').textContent.trim()[0])
-            .join('');
-        
-        const currentPartialData = partials[currentPartial];
-        
-        if (!currentPartialData.historial[nombre]) {
-            currentPartialData.historial[nombre] = {};
-        }
-        
-        currentPartialData.historial[nombre][fechaKey] = selectedSymbols;
-        
-        saveCurrentGroup();
-        actualizarTablaCompleta();
-        closeSymbolsModal();
-    }
-
-    // FUNCIONES PARA EVALUACIONES
-    function renderEvaluations() {
-        const evaluationsList = document.getElementById('evaluationsList');
-        evaluationsList.innerHTML = '';
-        
-        if (!currentGroup) return;
-        
-        const group = groupsStore[currentGroup];
-        if (!group || !group.partials || !group.partials[currentPartial]) return;
-        
-        const currentPartialData = group.partials[currentPartial];
-        
-        if (!currentPartialData.evaluations || Object.keys(currentPartialData.evaluations).length === 0) {
-            evaluationsList.innerHTML = `
-                <div style="text-align: center; padding: 30px; color: #64748b;">
-                    <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 10px; opacity: 0.3;"></i>
-                    <div>No hay evaluaciones para este parcial</div>
-                    <button onclick="createNewEvaluation()" style="margin-top: 15px; padding: 8px 15px; background: var(--uad-red); color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Crear primera evaluación
-                    </button>
-                </div>
-            `;
-            return;
-        }
-        
-        Object.keys(currentPartialData.evaluations).forEach(evalId => {
-            const evaluation = currentPartialData.evaluations[evalId];
-            const evalItem = document.createElement('div');
-            evalItem.className = 'evaluation-item';
-            
-            let averageGrade = '-';
-            let totalStudents = 0;
-            let sumGrades = 0;
-            
-            if (evaluation.grades && Object.keys(evaluation.grades).length > 0) {
-                Object.values(evaluation.grades).forEach(grade => {
-                    if (grade !== null && grade !== '') {
-                        sumGrades += parseFloat(grade) || 0;
-                        totalStudents++;
-                    }
-                });
-                if (totalStudents > 0) {
-                    averageGrade = (sumGrades / totalStudents).toFixed(1);
-                }
-            }
-            
-            evalItem.innerHTML = `
-                <div class="evaluation-header">
-                    <div class="evaluation-name">${evaluation.name}</div>
-                    <div style="display: flex; gap: 8px;">
-                        <button onclick="editEvaluation('${evalId}')" style="padding: 4px 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteEvaluation('${evalId}')" style="padding: 4px 8px; background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="evaluation-description">${evaluation.description || 'Sin descripción'}</div>
-                <div class="rubric-container">
-                    ${evaluation.rubric.map(item => `
-                        <div class="rubric-item">
-                            <span class="rubric-label">${item.criteria}</span>
-                            <span class="rubric-percentage">${item.percentage}%</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="color: #64748b; font-size: 14px;">Promedio: </span>
-                        <span style="font-weight: 600; color: var(--uad-red);">${averageGrade}</span>
-                    </div>
-                    <button onclick="enterGrades('${evalId}')" style="padding: 6px 12px; background: var(--uad-red); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                        <i class="fas fa-edit"></i> Ingresar Calificaciones
-                    </button>
-                </div>
-            `;
-            
-            evaluationsList.appendChild(evalItem);
-        });
-        
-        if (Object.keys(currentPartialData.evaluations).length > 0) {
-            renderGradesTable();
-        }
-    }
-
-    function createNewEvaluation() {
-        const evalId = 'eval_' + Date.now();
-        
-        if (!groupsStore[currentGroup]) return;
-        if (!groupsStore[currentGroup].partials) groupsStore[currentGroup].partials = {};
-        if (!groupsStore[currentGroup].partials[currentPartial]) {
-            groupsStore[currentGroup].partials[currentPartial] = { fechas: [], historial: {}, evaluations: {} };
-        }
-        
-        groupsStore[currentGroup].partials[currentPartial].evaluations = groupsStore[currentGroup].partials[currentPartial].evaluations || {};
-        
-        groupsStore[currentGroup].partials[currentPartial].evaluations[evalId] = {
-            id: evalId,
-            name: 'Nueva Evaluación',
-            description: '',
-            rubric: [
-                { criteria: 'Criterio 1', percentage: 100 }
-            ],
-            grades: {}
-        };
-        
-        nombres.forEach(nombre => {
-            groupsStore[currentGroup].partials[currentPartial].evaluations[evalId].grades[nombre] = '';
-        });
-        
-        saveAllData();
-        renderEvaluations();
-    }
-
-    function editEvaluation(evalId) {
-        if (!currentGroup || !groupsStore[currentGroup] || !groupsStore[currentGroup].partials) return;
-        
-        const currentPartialData = groupsStore[currentGroup].partials[currentPartial];
-        if (!currentPartialData || !currentPartialData.evaluations) return;
-        
-        const evaluation = currentPartialData.evaluations[evalId];
-        if (!evaluation) return;
-        
-        currentEvaluationId = evalId;
-        
-        document.getElementById('editEvaluationName').value = evaluation.name;
-        document.getElementById('editEvaluationDescription').value = evaluation.description || '';
-        
-        const rubricRows = document.getElementById('rubricRows');
-        rubricRows.innerHTML = '';
-        
-        evaluation.rubric.forEach((item, index) => {
-            const row = document.createElement('div');
-            row.className = 'rubric-row';
-            row.innerHTML = `
-                <input type="text" value="${item.criteria}" placeholder="Criterio" oninput="updateRubricTotal()" data-index="${index}">
-                <input type="number" class="percentage-input" value="${item.percentage}" min="0" max="100" step="1" oninput="updateRubricTotal()" data-index="${index}">
-                <button onclick="removeRubricRow(this)" style="padding: 8px 12px; background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            rubricRows.appendChild(row);
-        });
-        
-        updateRubricTotal();
-        document.getElementById('editEvaluationModal').classList.remove('hidden');
-    }
-
-    function closeEditEvaluationModal() {
-        document.getElementById('editEvaluationModal').classList.add('hidden');
-        currentEvaluationId = null;
-    }
-
-    function addRubricRow() {
-        const rubricRows = document.getElementById('rubricRows');
-        const index = rubricRows.children.length;
-        
-        const row = document.createElement('div');
-        row.className = 'rubric-row';
-        row.innerHTML = `
-            <input type="text" placeholder="Criterio" oninput="updateRubricTotal()" data-index="${index}">
-            <input type="number" class="percentage-input" value="0" min="0" max="100" step="1" oninput="updateRubricTotal()" data-index="${index}">
-            <button onclick="removeRubricRow(this)" style="padding: 8px 12px; background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        rubricRows.appendChild(row);
-        updateRubricTotal();
-    }
-
-    function removeRubricRow(button) {
-        const row = button.parentElement;
-        row.remove();
-        updateRubricTotal();
-    }
-
-    function updateRubricTotal() {
-        const inputs = document.querySelectorAll('.percentage-input');
-        let total = 0;
-        
-        inputs.forEach(input => {
-            total += parseFloat(input.value) || 0;
-        });
-        
-        document.getElementById('rubricTotal').textContent = `Total: ${total.toFixed(1)}%`;
-        
-        if (total > 100) {
-            document.getElementById('rubricTotal').style.color = '#ef4444';
-        } else if (Math.abs(total - 100) < 0.1) {
-            document.getElementById('rubricTotal').style.color = '#10b981';
-        } else {
-            document.getElementById('rubricTotal').style.color = 'var(--uad-red)';
-        }
-    }
-
-    function saveEvaluationChanges() {
-        if (!currentEvaluationId || !currentGroup) return;
-        
-        const name = document.getElementById('editEvaluationName').value.trim();
-        const description = document.getElementById('editEvaluationDescription').value.trim();
-        
-        if (!name) {
-            alert('El nombre de la evaluación es requerido');
-            return;
-        }
-        
-        const rubric = [];
-        const criteriaInputs = document.querySelectorAll('#rubricRows input[type="text"]');
-        const percentageInputs = document.querySelectorAll('#rubricRows .percentage-input');
-        
-        let totalPercentage = 0;
-        
-        for (let i = 0; i < criteriaInputs.length; i++) {
-            const criteria = criteriaInputs[i].value.trim();
-            const percentage = parseFloat(percentageInputs[i].value) || 0;
-            
-            if (criteria) {
-                rubric.push({ criteria, percentage });
-                totalPercentage += percentage;
-            }
-        }
-        
-        if (rubric.length === 0) {
-            alert('Debe haber al menos un criterio en la rúbrica');
-            return;
-        }
-        
-        if (Math.abs(totalPercentage - 100) > 0.1) {
-            if (!confirm(`La suma de porcentajes es ${totalPercentage}%, no 100%. ¿Desea continuar de todas formas?`)) {
-                return;
-            }
-        }
-        
-        const evaluation = groupsStore[currentGroup].partials[currentPartial].evaluations[currentEvaluationId];
-        evaluation.name = name;
-        evaluation.description = description;
-        evaluation.rubric = rubric;
-        
-        saveAllData();
-        renderEvaluations();
-        closeEditEvaluationModal();
-        showToast('Evaluación actualizada');
-    }
-
-    function deleteEvaluation(evalId) {
-        if (!confirm('¿Eliminar esta evaluación?')) return;
-        
-        delete groupsStore[currentGroup].partials[currentPartial].evaluations[evalId];
-        saveAllData();
-        renderEvaluations();
-        showToast('Evaluación eliminada');
-    }
-
-    function enterGrades(evalId) {
-        const evaluation = groupsStore[currentGroup].partials[currentPartial].evaluations[evalId];
-        if (!evaluation) return;
-        
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.style.display = 'flex';
-        
-        modal.innerHTML = `
-            <div class="modal" style="min-width: 600px;">
-                <div class="modal-header">
-                    <div class="modal-title">Calificaciones - ${evaluation.name}</div>
-                    <button class="modal-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                </div>
-                <div style="max-height: 60vh; overflow-y: auto;">
-                    <table class="grades-table">
-                        <thead>
-                            <tr>
-                                <th>Alumno</th>
-                                <th>Calificación (0-100)</th>
-                                <th>Calificación Final</th>
-                            </tr>
-                        </thead>
-                        <tbody id="gradesInputs">
-                            ${nombres.map((nombre, index) => {
-                                const grade = evaluation.grades?.[nombre] || '';
-                                const finalGrade = calculateFinalGradeForStudent(evaluation, grade);
-                                return `
-                                    <tr>
-                                        <td>${nombre}</td>
-                                        <td>
-                                            <input type="number" class="grade-input" value="${grade}" min="0" max="100" step="0.1" data-nombre="${nombre}" oninput="updateFinalGrade(this)">
-                                        </td>
-                                        <td class="final-grade-cell" style="font-weight: 600; color: var(--uad-red);">${finalGrade}</td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button onclick="saveGrades('${evalId}')" style="padding: 10px 20px; background: var(--uad-red); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Guardar</button>
-                    <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-    }
-
-    function updateFinalGrade(input) {
-        const row = input.parentElement.parentElement;
-        const finalGradeCell = row.querySelector('.final-grade-cell');
-        const grade = parseFloat(input.value) || 0;
-        
-        finalGradeCell.textContent = grade.toFixed(1);
-    }
-
-    function saveGrades(evalId) {
-        const inputs = document.querySelectorAll(`#gradesInputs .grade-input`);
-        const evaluation = groupsStore[currentGroup].partials[currentPartial].evaluations[evalId];
-        
-        inputs.forEach(input => {
-            const nombre = input.getAttribute('data-nombre');
-            const grade = input.value.trim();
-            
-            if (!evaluation.grades) evaluation.grades = {};
-            evaluation.grades[nombre] = grade ? parseFloat(grade) : '';
-        });
-        
-        saveAllData();
-        renderEvaluations();
-        
-        const modal = document.querySelector('.modal-overlay[style*="flex"]');
-        if (modal) modal.remove();
-        
-        showToast('Calificaciones guardadas');
-    }
-
-    function calculateFinalGradeForStudent(evaluation, grade) {
-        if (grade === '' || grade === null) return '-';
-        
-        const numericGrade = parseFloat(grade);
-        if (isNaN(numericGrade)) return '-';
-        
-        return numericGrade.toFixed(1);
-    }
-
-    function renderGradesTable() {
-        const gradesHeader = document.getElementById('gradesHeader');
-        const gradesBody = document.getElementById('gradesBody');
-        const container = document.getElementById('gradesTableContainer');
-        
-        if (!currentGroup || !groupsStore[currentGroup] || !groupsStore[currentGroup].partials) return;
-        
-        const currentPartialData = groupsStore[currentGroup].partials[currentPartial];
-        if (!currentPartialData || !currentPartialData.evaluations) return;
-        
-        const evaluations = currentPartialData.evaluations;
-        const evaluationIds = Object.keys(evaluations);
-        
-        if (evaluationIds.length === 0) {
-            container.classList.add('hidden');
-            return;
-        }
-        
-        container.classList.remove('hidden');
-        
-        gradesHeader.innerHTML = `
-            <tr>
-                <th>Alumno</th>
-                ${evaluationIds.map(evalId => `<th>${evaluations[evalId].name}</th>`).join('')}
-                <th>Faltas</th>
-                <th>Calificación Final</th>
-            </tr>
-        `;
-        
-        gradesBody.innerHTML = '';
-        
-        nombres.forEach(nombre => {
-            const tr = document.createElement('tr');
-            
-            const tdNombre = document.createElement('td');
-            tdNombre.textContent = nombre;
-            
-            let totalFaltas = 0;
-            const historial = currentPartialData.historial?.[nombre] || {};
-            Object.values(historial).forEach(symbols => {
-                if (symbols && symbols.includes('/')) {
-                    totalFaltas += symbols.split('').filter(s => s === '/').length;
-                }
-            });
-            
-            if (totalFaltas > 3) {
-                tdNombre.className = 'student-name-red';
-            }
-            
-            tr.appendChild(tdNombre);
-            
-            let totalWeightedGrade = 0;
-            let totalPercentage = 0;
-            
-            evaluationIds.forEach(evalId => {
-                const evaluation = evaluations[evalId];
-                const grade = evaluation.grades?.[nombre] || '';
-                const td = document.createElement('td');
-                
-                if (grade !== '') {
-                    td.textContent = parseFloat(grade).toFixed(1);
-                    
-                    const rubricTotal = evaluation.rubric.reduce((sum, r) => sum + r.percentage, 0);
-                    if (rubricTotal > 0) {
-                        totalWeightedGrade += (parseFloat(grade) * rubricTotal / 100);
-                        totalPercentage += rubricTotal;
-                    }
-                } else {
-                    td.textContent = '-';
-                    td.style.color = '#94a3b8';
-                }
-                
-                tr.appendChild(td);
-            });
-            
-            const tdFaltas = document.createElement('td');
-            tdFaltas.textContent = totalFaltas;
-            if (totalFaltas > 3) {
-                tdFaltas.className = 'total-failures';
-            }
-            tr.appendChild(tdFaltas);
-            
-            const tdFinal = document.createElement('td');
-            let finalGrade = '-';
-            
-            if (totalPercentage > 0) {
-                finalGrade = (totalWeightedGrade * 100 / totalPercentage).toFixed(1);
-                tdFinal.textContent = finalGrade;
-                tdFinal.style.fontWeight = '600';
-                tdFinal.style.color = '#10b981';
-            } else {
-                tdFinal.textContent = finalGrade;
-            }
-            
-            tr.appendChild(tdFinal);
-            gradesBody.appendChild(tr);
-        });
-    }
-
-    // Exportación de calificaciones
-    function exportEvaluations() {
-        if (!currentGroup || !groupsStore[currentGroup] || !groupsStore[currentGroup].partials) {
-            alert('No hay datos para exportar');
-            return;
-        }
-        
-        const currentPartialData = groupsStore[currentGroup].partials[currentPartial];
-        if (!currentPartialData || !currentPartialData.evaluations) {
-            alert('No hay evaluaciones para exportar');
-            return;
-        }
-        
-        const evaluations = currentPartialData.evaluations;
-        const evaluationIds = Object.keys(evaluations);
-        
-        if (evaluationIds.length === 0) {
-            alert('No hay evaluaciones para exportar');
-            return;
-        }
-        
-        const data = [];
-        
-        const header = ['Alumno', ...evaluationIds.map(evalId => evaluations[evalId].name), 'Total Faltas', 'Calificación Final'];
-        data.push(header);
-        
-        nombres.forEach(nombre => {
-            const row = [nombre];
-            let totalWeightedGrade = 0;
-            let totalPercentage = 0;
-            let totalFaltas = 0;
-            
-            const historial = currentPartialData.historial?.[nombre] || {};
-            Object.values(historial).forEach(symbols => {
-                if (symbols && symbols.includes('/')) {
-                    totalFaltas += symbols.split('').filter(s => s === '/').length;
-                }
-            });
-            
-            evaluationIds.forEach(evalId => {
-                const evaluation = evaluations[evalId];
-                const grade = evaluation.grades?.[nombre] || '';
-                
-                if (grade !== '') {
-                    row.push(parseFloat(grade).toFixed(1));
-                    
-                    const rubricTotal = evaluation.rubric.reduce((sum, r) => sum + r.percentage, 0);
-                    if (rubricTotal > 0) {
-                        totalWeightedGrade += (parseFloat(grade) * rubricTotal / 100);
-                        totalPercentage += rubricTotal;
-                    }
-                } else {
-                    row.push('-');
-                }
-            });
-            
-            row.push(totalFaltas);
-            
-            let finalGrade = '-';
-            if (totalPercentage > 0) {
-                finalGrade = (totalWeightedGrade * 100 / totalPercentage).toFixed(1);
-            }
-            row.push(finalGrade);
-            
-            data.push(row);
-        });
-        
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Calificaciones');
-        XLSX.writeFile(wb, `calificaciones_${currentGroup}_${currentPartial}.xlsx`);
-        
-        showToast('Calificaciones exportadas');
-    }
-
-    function exportEvaluationsPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('landscape');
-        
-        doc.setFontSize(18);
-        doc.setTextColor(208, 0, 0);
-        doc.text(`Calificaciones - ${currentGroup} - ${currentPartial}`, 20, 20);
-        
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 30);
-        
-        const currentPartialData = groupsStore[currentGroup].partials[currentPartial];
-        const evaluations = currentPartialData.evaluations || {};
-        const evaluationIds = Object.keys(evaluations);
-        
-        if (evaluationIds.length === 0) {
-            alert('No hay evaluaciones para exportar');
-            return;
-        }
-        
-        const tableData = nombres.map(nombre => {
-            const row = [nombre];
-            let totalWeightedGrade = 0;
-            let totalPercentage = 0;
-            let totalFaltas = 0;
-            
-            const historial = currentPartialData.historial?.[nombre] || {};
-            Object.values(historial).forEach(symbols => {
-                if (symbols && symbols.includes('/')) {
-                    totalFaltas += symbols.split('').filter(s => s === '/').length;
-                }
-            });
-            
-            evaluationIds.forEach(evalId => {
-                const evaluation = evaluations[evalId];
-                const grade = evaluation.grades?.[nombre] || '';
-                
-                if (grade !== '') {
-                    row.push(parseFloat(grade).toFixed(1));
-                    
-                    const rubricTotal = evaluation.rubric.reduce((sum, r) => sum + r.percentage, 0);
-                    if (rubricTotal > 0) {
-                        totalWeightedGrade += (parseFloat(grade) * rubricTotal / 100);
-                        totalPercentage += rubricTotal;
-                    }
-                } else {
-                    row.push('-');
-                }
-            });
-            
-            row.push(totalFaltas.toString());
-            
-            let finalGrade = '-';
-            if (totalPercentage > 0) {
-                finalGrade = (totalWeightedGrade * 100 / totalPercentage).toFixed(1);
-            }
-            row.push(finalGrade);
-            
-            if (totalFaltas > 3) {
-                row[0] = { content: nombre, styles: { textColor: [239, 68, 68] } };
-            }
-            
-            return row;
-        });
-        
-        const headers = ['Alumno', ...evaluationIds.map(evalId => evaluations[evalId].name), 'Faltas', 'Final'];
-        
-        doc.autoTable({
-            startY: 40,
-            head: [headers],
-            body: tableData,
-            theme: 'grid',
-            headStyles: {
-                fillColor: [208, 0, 0],
-                textColor: [255, 255, 255],
-                fontStyle: 'bold'
-            },
-            didDrawCell: (data) => {
-                if (data.column.index === headers.length - 2 && data.cell.raw) {
-                    const faltas = parseInt(data.cell.raw);
-                    if (faltas > 3) {
-                        data.cell.styles.textColor = [239, 68, 68];
-                        data.cell.styles.fontStyle = 'bold';
-                    }
-                }
-            }
-        });
-        
-        doc.save(`calificaciones_${currentGroup}_${currentPartial}.pdf`);
-        showToast('PDF exportado');
-    }
-
-    function importEvaluations() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.xlsx,.xls,.csv';
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-                    
-                    if (jsonData.length < 2) {
-                        alert('El archivo no contiene datos válidos');
-                        return;
-                    }
-                    
-                    const headers = jsonData[0];
-                    const studentNameIndex = headers.indexOf('Alumno');
-                    
-                    if (studentNameIndex === -1) {
-                        alert('El archivo debe tener una columna "Alumno"');
-                        return;
-                    }
-                    
-                    const currentPartialData = groupsStore[currentGroup].partials[currentPartial];
-                    if (!currentPartialData.evaluations) {
-                        currentPartialData.evaluations = {};
-                    }
-                    
-                    const evalMap = {};
-                    headers.forEach((header, index) => {
-                        if (header !== 'Alumno' && header !== 'Faltas' && header !== 'Calificación Final') {
-                            const evalId = Object.keys(currentPartialData.evaluations).find(
-                                id => currentPartialData.evaluations[id].name === header
-                            );
-                            if (evalId) {
-                                evalMap[index] = evalId;
-                            }
-                        }
-                    });
-                    
-                    for (let i = 1; i < jsonData.length; i++) {
-                        const row = jsonData[i];
-                        const studentName = row[studentNameIndex];
-                        
-                        if (studentName && nombres.includes(studentName)) {
-                            Object.keys(evalMap).forEach(colIndex => {
-                                const evalId = evalMap[colIndex];
-                                const grade = row[colIndex];
-                                
-                                if (!currentPartialData.evaluations[evalId].grades) {
-                                    currentPartialData.evaluations[evalId].grades = {};
-                                }
-                                
-                                if (grade !== undefined && grade !== null && grade !== '') {
-                                    currentPartialData.evaluations[evalId].grades[studentName] = parseFloat(grade);
-                                }
-                            });
-                        }
-                    }
-                    
-                    saveAllData();
-                    renderEvaluations();
-                    showToast('Calificaciones importadas');
-                    
-                } catch (error) {
-                    alert('Error al importar: ' + error.message);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        };
-        input.click();
-    }
+    
+    saveCurrentGroup();
+}
 
     function iniciarAsistencia() {
         const mes = parseInt(document.getElementById('inputMes').value);
@@ -2365,8 +1209,10 @@
             return;
         }
         
+        // Agregar fecha si no existe
         agregarColumna();
         
+        // Reiniciar índice
         indice = 0;
         actualizarInterfaz();
     }
@@ -2398,9 +1244,7 @@
             currentPartialData.historial[nombre] = {};
         }
         
-        currentPartialData.historial[nombre][fechaKey] = currentPartialData.historial[nombre][fechaKey] ?
-            currentPartialData.historial[nombre][fechaKey] + '.' : '.';
-        
+        currentPartialData.historial[nombre][fechaKey] = '.';
         indice++;
         actualizarInterfaz();
         actualizarTablaCompleta();
@@ -2424,20 +1268,11 @@
             currentPartialData.historial[nombre] = {};
         }
         
-        currentPartialData.historial[nombre][fechaKey] = currentPartialData.historial[nombre][fechaKey] ?
-            currentPartialData.historial[nombre][fechaKey] + '/' : '/';
-        
+        currentPartialData.historial[nombre][fechaKey] = '/';
         indice++;
         actualizarInterfaz();
         actualizarTablaCompleta();
         saveCurrentGroup();
-    }
-
-    function repetirUltimo() {
-        if (indice > 0) {
-            indice--;
-            actualizarInterfaz();
-        }
     }
 
     // Navegación
@@ -2451,7 +1286,7 @@
         document.getElementById('asistenciaScreen').classList.remove('hidden');
     }
 
-    // Exportación existente
+    // Exportación
     function exportExcel() {
         if (nombres.length === 0) {
             alert('No hay datos para exportar');
@@ -2517,7 +1352,7 @@
         input.click();
     }
 
-    // Función de búsqueda
+    // Nuevo: Función de búsqueda
     function performSearch() {
         searchTerm = document.getElementById('searchInput').value.trim();
         renderCyclesList();
@@ -2543,7 +1378,6 @@
         document.getElementById('btnIniciarAsistencia').addEventListener('click', iniciarAsistencia);
         document.getElementById('btnAsistencia').addEventListener('click', marcarAsistencia);
         document.getElementById('btnFalta').addEventListener('click', marcarFalta);
-        document.getElementById('btnRepetir').addEventListener('click', repetirUltimo);
         document.getElementById('btnAgregarAlumno').addEventListener('click', agregarAlumno);
         
         // Exportación
@@ -2552,32 +1386,12 @@
         document.getElementById('btnImportAll').addEventListener('click', importAllData);
         document.getElementById('btnExportParcial').addEventListener('click', exportExcel);
         
-        // Evaluaciones
-        document.getElementById('btnNuevaEvaluacion').addEventListener('click', createNewEvaluation);
-        document.getElementById('btnExportEvaluaciones').addEventListener('click', exportEvaluations);
-        document.getElementById('btnExportPDF').addEventListener('click', exportEvaluationsPDF);
-        document.getElementById('btnImportEvaluaciones').addEventListener('click', importEvaluations);
-        
-        // Otros
+        // Nuevo: Selector de ciclo activo
         document.getElementById('selectActiveCycle').addEventListener('change', setActiveCycle);
+        
+        // Nuevo: Búsqueda
         document.getElementById('searchInput').addEventListener('input', performSearch);
         
-        // Atajos de teclado
-        document.addEventListener('keydown', function(e) {
-            if (e.key === '.') {
-                marcarAsistencia();
-                e.preventDefault();
-            } else if (e.key === '/') {
-                marcarFalta();
-                e.preventDefault();
-            } else if (e.key === 'r' || e.key === 'R') {
-                repetirUltimo();
-                e.preventDefault();
-            } else if (e.key === 'Escape') {
-                closeSymbolsModal();
-                closeEditEvaluationModal();
-            }
-        });
     }
     </script>
 </body>
